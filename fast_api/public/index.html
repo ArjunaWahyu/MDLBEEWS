@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <div id="messages"></div>
+    <script>
+        const ws = new WebSocket('ws://localhost:3333/ws');
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('p');
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
+
+        ws.onmessage = (event) => {
+            messageElement.textContent = event.data;
+            messagesDiv.innerHTML = '';
+            messagesDiv.appendChild(messageElement);
+        };
+
+        ws.onclose = () => {
+            console.log('Disconnected from WebSocket server');
+        };
+
+        ws.onerror = (error) => {
+            console.log('WebSocket error:', error);
+        };
+    </script>
+</body>
+</html>

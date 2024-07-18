@@ -1,0 +1,5 @@
+[InfluxdbConfig]
+bucket = eews
+org = owner
+url = http://influxdb:8086
+token = eFWu0UGcCzvGAX1w-z43heHjfDk8swujfryImhIsTrAkNJOgfMRSYsgYVki-QTiWHDwKLJtxsSnCmHhxisCN1w==

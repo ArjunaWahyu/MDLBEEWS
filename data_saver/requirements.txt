@@ -1,0 +1,6 @@
+kafka-python
+influxdb
+influxdb_client
+pymongo
+numpy
+obspy

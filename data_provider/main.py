@@ -46,6 +46,7 @@ if __name__ == '__main__':
             print(f"Creating topic '{kafka_topic}'...")
         except Exception as e:
             kafkaAdminClient.delete_topics(topics=[kafka_topic])
+            sleep(3)
             kafkaAdminClient.create_topics(new_topics=[new_topic])
             print(f"Topic '{kafka_topic}' already exists. Deleting and recreating...")
         sleep(3)

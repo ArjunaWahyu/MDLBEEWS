@@ -32,10 +32,10 @@ class TraceConsumer:
 if __name__ == '__main__':
   consumer = TraceConsumer()
   server = 'kafka:9092'
-  topic = 'trace_topic'
+  topic = 'p_wave_topic'
 
   while not consumer.topic_exists(topic, server):
     sleep(3)
 
-  consumer.configureConnection('trace_topic', 'trace_group', 'kafka:9092')
+  consumer.configureConnection('p_wave_topic', 'data_comsumer_group', 'kafka:9092')
   consumer.connectConsumer()

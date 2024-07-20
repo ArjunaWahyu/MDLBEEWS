@@ -15,44 +15,19 @@ if __name__ == '__main__':
         sleep(3)
 
     try:
-        # topic_config = {
-        #     # cleanup.policy is used to set the topic retention policy to delete
-        #     "cleanup.policy": "delete",
-        #     # retention.ms is used to set the time to wait before deleting a message
-        #     "retention.ms": 10000,  # 10 detik
-        #     # segment.ms is used to set the time to wait before creating a new log segment
-        #     "segment.ms": 10000,  # 10 detik
-        #     # Minimize the size of each log segment file to ensure rapid log segment rotation
-        #     "segment.bytes": 1024,  # 1 KB
-        #     # Delete log segments as soon as possible
-        #     "log.retention.bytes": 1,  # 1 byte (effectively immediate deletion)
-        #     # Flush the log at least once every 10 seconds
-        #     "flush.ms": 10000,  # 10 detik
-        #     # Flush the log to disk after every message (minimize disk usage)
-        #     "flush.messages": 1,
-        #     # Minimize the amount of data retained
-        #     "log.retention.check.interval.ms": 1000  # Check for log retention every second
-        # }
+        kafkaAdminClient = KafkaAdminClient(bootstrap_servers=bootstrap_servers)
         new_topic = NewTopic(
             name=kafka_topic,
             num_partitions=num_partitions,
             replication_factor=replication_factor,
-            # topic_configs=topic_config
-            )
-        kafkaAdminClient = KafkaAdminClient(bootstrap_servers=bootstrap_servers)
-        # add partition kafka
-        try:
-            kafkaAdminClient.create_topics(new_topics=[new_topic])
-            print(f"Creating topic '{kafka_topic}'...")
-        except Exception as e:
-            kafkaAdminClient.delete_topics(topics=[kafka_topic])
-            sleep(3)
-            kafkaAdminClient.create_topics(new_topics=[new_topic])
-            print(f"Topic '{kafka_topic}' already exists. Deleting and recreating...")
-        sleep(3)
-        if topic_exists(kafka_topic, bootstrap_servers):
-            print(f"Topic '{kafka_topic}' created successfully.")
+        )
+        print(f"Creating topic '{kafka_topic}'...")
+        kafkaAdminClient.create_topics(new_topics=[new_topic])
+        print(f"Topic '{kafka_topic}' created successfully.")
     except Exception as e:
-        print(f"[Create Kafka Topic] Error: {e}")
+        print(f"Error creating topic '{kafka_topic}': {e}")
+        
+    if topic_exists(kafka_topic, bootstrap_servers):
+        print(f"Topic '{kafka_topic}' created successfully.")
 
     main(station_path='./data/stations.json',num_processes=30, num_station_configs=6000)

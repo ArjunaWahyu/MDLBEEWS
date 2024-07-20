@@ -6,6 +6,8 @@ from time import sleep
 from utils.util import topic_exists, check_kafka_connection
 
 if __name__ == '__main__':
+    print("Starting data provider...")
+    
     bootstrap_servers = 'kafka:9092'
     kafka_topic = 'trace_topic'
     num_partitions = 3
@@ -26,7 +28,7 @@ if __name__ == '__main__':
         print(f"Topic '{kafka_topic}' created successfully.")
     except Exception as e:
         print(f"Error creating topic '{kafka_topic}': {e}")
-        
+
     if topic_exists(kafka_topic, bootstrap_servers):
         print(f"Topic '{kafka_topic}' created successfully.")
 

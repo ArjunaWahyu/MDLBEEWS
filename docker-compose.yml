@@ -123,7 +123,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     deploy:
-      replicas: 3
+      replicas: 2
       resources:
         reservations:
           devices:

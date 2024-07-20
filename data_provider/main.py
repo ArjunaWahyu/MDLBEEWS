@@ -7,7 +7,7 @@ from utils.util import topic_exists, check_kafka_connection
 
 if __name__ == '__main__':
     print("Starting data provider...")
-    
+
     bootstrap_servers = 'kafka:9092'
     kafka_topic = 'trace_topic'
     num_partitions = 3
@@ -23,9 +23,10 @@ if __name__ == '__main__':
             num_partitions=num_partitions,
             replication_factor=replication_factor,
         )
-        print(f"Creating topic '{kafka_topic}'...")
-        kafkaAdminClient.create_topics(new_topics=[new_topic])
-        print(f"Topic '{kafka_topic}' created successfully.")
+        if not topic_exists(kafka_topic, bootstrap_servers):
+            print(f"Creating topic '{kafka_topic}'...")
+            kafkaAdminClient.create_topics(new_topics=[new_topic])
+            print(f"Topic '{kafka_topic}' created successfully.")
     except Exception as e:
         print(f"Error creating topic '{kafka_topic}': {e}")
 

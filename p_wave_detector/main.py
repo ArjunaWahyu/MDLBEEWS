@@ -41,27 +41,20 @@ class TraceConsumer:
         return is_topic_exist
 
     def create_topic(self, kafka_topic, num_partitions, replication_factor, bootstrap_servers):
-        try:
-            new_topic = NewTopic(
-                name=kafka_topic,
-                num_partitions=num_partitions,
-                replication_factor=replication_factor,
-                # topic_configs=topic_config
-                )
-            kafkaAdminClient = KafkaAdminClient(bootstrap_servers=bootstrap_servers)
-            # add partition kafka
+        kafkaAdminClient = KafkaAdminClient(bootstrap_servers=bootstrap_servers)
+        while not self.topic_exists(kafka_topic, bootstrap_servers):
             try:
-                kafkaAdminClient.create_topics(new_topics=[new_topic])
+                new_topic = NewTopic(
+                    name=kafka_topic,
+                    num_partitions=num_partitions,
+                    replication_factor=replication_factor
+                )
                 print(f"Creating topic '{kafka_topic}'...")
-            except Exception as e:
-                kafkaAdminClient.delete_topics(topics=[kafka_topic])
                 kafkaAdminClient.create_topics(new_topics=[new_topic])
-                print(f"Topic '{kafka_topic}' already exists. Deleting and recreating...")
-            sleep(3)
-            if self.topic_exists(kafka_topic, bootstrap_servers):
                 print(f"Topic '{kafka_topic}' created successfully.")
-        except Exception as e:
-            print(f"[Create Kafka Topic] Error: {e}")
+            except Exception as e:
+                print(f"Error creating topic '{kafka_topic}': {e}")
+            sleep(3)
 
     def setTrace(self, data):
         trace = obspy.Trace(np.array(data['data']))

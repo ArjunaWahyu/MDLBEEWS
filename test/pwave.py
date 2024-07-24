@@ -131,12 +131,16 @@ def readInfluxDB(station, channel, start_time, end_time):
     tables = query_api.query(query)
     return tables
 
-# get 5 minutes data from influxdb
+# get 4 second data from influxdb
 end_time = int(time.time() * 1e9)
-start_time = int((time.time() - 300) * 1e9)
+start_time = int((time.time() - 4) * 1e9)
 print(start_time, end_time)
-tables = readInfluxDB('BBJI', 'BHZ', start_time, end_time)
+print("delta time: ", (end_time - start_time) / 1e9)
+tables = readInfluxDB('BBJI', 'BHE', start_time, end_time)
 if len(tables) > 0:
+    wave = []
     for table in tables:
         for record in table.records:
-            print(f"{record.get_field()}")
+            wave.append(record.get_value())
+
+    print(len(wave))

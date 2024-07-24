@@ -124,14 +124,14 @@ services:
       - NVIDIA_VISIBLE_DEVICES=all
     deploy:
       replicas: 2
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
-        limits:
-          memory: 5G
+      # resources:
+      #   reservations:
+      #     devices:
+      #       - driver: nvidia
+      #         count: 1
+      #         capabilities: [ gpu ]
+      #   limits:
+      #     memory: 5G
     networks:
       - kafka_network
       - influxdb_network

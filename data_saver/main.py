@@ -254,7 +254,7 @@ def consume_and_save_data():
                         f"Delay: {time.time() - data['data_provider_time']}")
 
                     pool.apply_async(save_data_to_influxdb, args=(data,))
-                    # pool.apply_async(save_data_to_mongodb, args=(data,))
+                    pool.apply_async(save_data_to_mongodb, args=(data,))
                     # pool.apply_async(save_data_to_mseed, args=(data,))
             except KeyboardInterrupt:
                 logging.info("Shutting down gracefully...")

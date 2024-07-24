@@ -8,6 +8,7 @@ import tensorflow as tf
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from kafka.admin import KafkaAdminClient, NewTopic
+import concurrent.futures
 
 class TraceConsumer:
     def __init__(self):
@@ -17,6 +18,7 @@ class TraceConsumer:
             './model_p_wave.h5', compile=False)
         self.query_api = self.connectInfluxDB()
         self.last_waveform = {}
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
 
     def configureConnection(self, topic, group, server):
         self.consumer = KafkaConsumer(
@@ -117,7 +119,8 @@ class TraceConsumer:
                         'p_wave_detector_time': time(),
                         'data': p_wave_waveform.tolist()
                     }
-                    self.producer.send('p_wave_topic', data, key=f"{data['station']}-{data['channel']}")
+                    self.producer.send('loc_mag_topic', data, key=f"{data['station']}-{data['channel']}")
+                    self.producer.flush()
                     break
 
         except Exception as e:
@@ -141,33 +144,18 @@ class TraceConsumer:
         return tables
 
     def process(self, data):
-        # # read 4 seconds data before start_time from influxdb
-        # start_time = int((data['start_time']) * 1e9 - 4 * 1e9)
-        # end_time = int(data['start_time'] * 1e9)
-        # tables = self.readInfluxDB(
-        #     data['station'], data['channel'], start_time, end_time)
-        # if len(tables) > 0:
-        #     # get list of data from influxdb
-        #     influxdb_data = [record.get_value() for table in tables for record in table.records]
-        #     print(f"frequency: {data['sampling_rate']}\tLength 4 seconds: {data['sampling_rate'] * 4}\tData from InfluxDB: {len(influxdb_data)}")
-        #     # concatenate list data from kafka and influxdb
-        #     data['data'] = influxdb_data + data['data']
-
         # concatenate last 4 seconds waveform with current waveform
         key = f"{data['station']}-{data['channel']}"
-        # print(f"{key}\tBefore Length: {len(data['data'])}\tBefore Start Time: {data['start_time']}")
         if key in self.last_waveform:
             data['data'] = self.last_waveform[key] + data['data']
             data['start_time'] = data['start_time'] - 4
             data['npts'] = len(data['data'])
             data['sample_cnt'] = len(data['data'])
             data['num_samples'] = len(data['data'])
-        # print(f"{key}\tAfter Length: {len(data['data'])}\tAfter Start Time: {data['start_time']}")
 
         sampling_rate = data['sampling_rate']
         ratio = sampling_rate / 20
         new_length = int(len(data['data']) / ratio)
-        # print(f"{key}\tLength: {len(data['data'])}\tNew Length: {new_length}")
         if new_length >= 160:
             trace = self.setTrace(data)
             self.predict(trace)
@@ -177,47 +165,24 @@ class TraceConsumer:
     def connectConsumer(self):
         for msg in self.consumer:
             data = msg.value
-            if data['channel'].endswith('Z'):
-                print(f"Delay: {time() - data['data_provider_time']}")
-                # concate last 4 seconds waveform with current waveform
-                self.process(data)
-                # save only last 4 seconds waveform
-                key = f"{data['station']}-{data['channel']}"
-                if key in self.last_waveform:
-                    self.last_waveform[key] = self.last_waveform[key] + data['data']
-                else:
-                    self.last_waveform[key] = data['data']
+            print(f"Delay: {time() - data['data_provider_time']}")
+            start_time = time()
+            # concate last 4 seconds waveform with current waveform
+            # self.process(data)
+            self.executor.submit(self.process, data)
+            # save only last 4 seconds waveform
+            key = f"{data['station']}-{data['channel']}"
+            if key in self.last_waveform:
+                self.last_waveform[key] = self.last_waveform[key] + data['data']
+            else:
+                self.last_waveform[key] = data['data']
 
-                # check if last 4 seconds waveform
-                cut_length = int(4 * data['sampling_rate'])
-                if len(self.last_waveform[key]) > cut_length:
-                    self.last_waveform[key] = self.last_waveform[key][-cut_length:]
+            # check if last 4 seconds waveform
+            cut_length = int(4 * data['sampling_rate'])
+            if len(self.last_waveform[key]) > cut_length:
+                self.last_waveform[key] = self.last_waveform[key][-cut_length:]
 
-            # sampling_rate = data['sampling_rate']
-            # ratio = sampling_rate / 20
-            # new_length = int(len(data['data']) / ratio)
-            # if data['channel'].endswith('Z') and new_length >= 160:
-            #     try:
-            #         # read 4 seconds data before start_time from influxdb
-            #         start_time = int((data['start_time']) * 1e9 - 4 * 1e9)
-            #         end_time = int(data['start_time'] * 1e9)
-            #         tables = self.readInfluxDB(
-            #             data['station'], data['channel'], start_time, end_time)
-            #         if len(tables) > 0:
-            #             # get list of data from influxdb
-            #             influxdb_data = [record.get_value() for table in tables for record in table.records]
-            #             print(f"frequency: {data['sampling_rate']}\tLength 4 seconds: {data['sampling_rate'] * 4}\tData from InfluxDB: {len(influxdb_data)}")
-
-                    # trace = self.setTrace(data)
-                    # self.predict(trace)
-
-                    # print station channel sampling rate from trace
-                    # print(f"Station: {trace.stats.station},\tChannel: {trace.stats.channel},\tSampling Rate: {trace.stats.sampling_rate}")
-                    # print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tKey: {msg.key},\tStation: {data['station']},\tChannel: {data['channel']},\tsampling_rate: {data['sampling_rate']}")
-                    # print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tStation: {data['station']},\tChannel: {data['channel']},\tsampling_rate: {data['sampling_rate']}")
-                # except Exception as e:
-                #     print(
-                #         f"Error connectConsumer {data['station']}\t{data['channel']}:\t{e}")
+            print(f"Process Time: {time() - start_time}")
 
 if __name__ == '__main__':
     influxdb_url = "http://influxdb:8086"
@@ -226,19 +191,19 @@ if __name__ == '__main__':
     influxdb_bucket = "eews"
 
     bootstrap_servers = 'kafka:9092'
-    kafka_topic = 'p_wave_topic'
+    kafka_topic = 'loc_mag_topic'
     num_partitions = 3
     replication_factor = 1
 
     traceConsumer = TraceConsumer()
     server = 'kafka:9092'
-    topic = 'trace_topic'
+    topic = 'p_wave_topic'
 
     while not traceConsumer.topic_exists(topic, server):
         sleep(3)
 
     traceConsumer.create_topic(kafka_topic, num_partitions, replication_factor, bootstrap_servers)
 
-    traceConsumer.configureConnection('trace_topic', 'trace_group', 'kafka:9092')
+    traceConsumer.configureConnection('p_wave_topic', 'trace_group', 'kafka:9092')
     traceConsumer.configureProducer(server)
     traceConsumer.connectConsumer()

@@ -10,6 +10,7 @@ if __name__ == '__main__':
 
     bootstrap_servers = 'kafka:9092'
     kafka_topic = 'trace_topic'
+    kafka_topic2 = 'p_wave_topic'
     num_partitions = 3
     replication_factor = 1
 
@@ -23,14 +24,20 @@ if __name__ == '__main__':
             num_partitions=num_partitions,
             replication_factor=replication_factor,
         )
-        if not topic_exists(kafka_topic, bootstrap_servers):
-            print(f"Creating topic '{kafka_topic}'...")
+        new_topic2 = NewTopic(
+            name=kafka_topic2,
+            num_partitions=num_partitions,
+            replication_factor=replication_factor,
+        )
+        if not topic_exists(kafka_topic, bootstrap_servers) and not topic_exists(kafka_topic2, bootstrap_servers):
+            print(f"Creating topic '{kafka_topic}' and '{kafka_topic2}'...")
             kafkaAdminClient.create_topics(new_topics=[new_topic])
-            print(f"Topic '{kafka_topic}' created successfully.")
+            kafkaAdminClient.create_topics(new_topics=[new_topic2])
+            print(f"Topic '{kafka_topic}' and '{kafka_topic2}' created successfully.")
     except Exception as e:
-        print(f"Error creating topic '{kafka_topic}': {e}")
+        print(f"Error creating topic '{kafka_topic}' and '{kafka_topic2}': {e}")
 
-    if topic_exists(kafka_topic, bootstrap_servers):
-        print(f"Topic '{kafka_topic}' created successfully.")
+    if topic_exists(kafka_topic, bootstrap_servers) and topic_exists(kafka_topic2, bootstrap_servers):
+        print(f"Topic '{kafka_topic}' and '{kafka_topic2}' exists.")
 
     main(station_path='./data/stations.json',num_processes=30, num_station_configs=6000)

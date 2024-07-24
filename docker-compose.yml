@@ -21,15 +21,15 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LOG_RETENTION_MS: 600000  # 10 menit
-      KAFKA_LOG_SEGMENT_BYTES: 1048576  # 1 MB
-      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1 GB
-      KAFKA_HEAP_OPTS: "-Xmx256m -Xms256m -XX:+UseG1GC"  # Set JVM heap size to 256MB
+      # KAFKA_LOG_RETENTION_MS: 600000  # 10 menit
+      # KAFKA_LOG_SEGMENT_BYTES: 1048576  # 1 MB
+      # KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1 GB
+      # KAFKA_HEAP_OPTS: "-Xmx256m -Xms256m -XX:+UseG1GC"  # Set JVM heap size to 256MB
       KAFKA_NUM_PARTITIONS: 3
-    deploy:
-      resources:
-        limits:
-          memory: 500M
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 500M
     networks:
       - kafka_network
     depends_on:
@@ -120,18 +120,18 @@ services:
   p_wave_detector:
     build:
       context: ./p_wave_detector
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
     deploy:
       replicas: 2
-      # resources:
-      #   reservations:
-      #     devices:
-      #       - driver: nvidia
-      #         count: 1
-      #         capabilities: [ gpu ]
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
       #   limits:
       #     memory: 5G
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
     networks:
       - kafka_network
       - influxdb_network

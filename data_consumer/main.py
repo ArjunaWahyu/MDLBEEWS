@@ -27,15 +27,15 @@ class TraceConsumer:
     for msg in self.consumer:
       data = msg.value
       # print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tKey: {msg.key},\tStation: {data['station']},\tChannel: {data['channel']},\tsampling_rate: {data['sampling_rate']}")
-      print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tStation: {data['station']},\tChannel: {data['channel']},\tsampling_rate: {data['sampling_rate']}")
-
+      print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tStation: {data['station']},\tChannel: {data['channel']}")
+      
 if __name__ == '__main__':
   consumer = TraceConsumer()
   server = 'kafka:9092'
-  topic = 'p_wave_topic'
+  topic = 'loc_mag_topic'
 
   while not consumer.topic_exists(topic, server):
     sleep(3)
 
-  consumer.configureConnection('p_wave_topic', 'data_comsumer_group', 'kafka:9092')
+  consumer.configureConnection('loc_mag_topic', 'data_comsumer_group', 'kafka:9092')
   consumer.connectConsumer()

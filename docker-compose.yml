@@ -120,6 +120,8 @@ services:
   p_wave_detector:
     build:
       context: ./p_wave_detector
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
     deploy:
       replicas: 2
       resources:
@@ -130,8 +132,6 @@ services:
               capabilities: [ gpu ]
       #   limits:
       #     memory: 5G
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
     networks:
       - kafka_network
       - influxdb_network

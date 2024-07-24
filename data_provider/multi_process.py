@@ -4,8 +4,8 @@ import multiprocessing
 from time import sleep
 
 def main(server='geofon.gfz-potsdam.de:18000', station_path = 'data_provider/data/stations.json', num_processes=24, num_station_configs=6000):
-    # station_configs = get_station_configs(station_path, num_station_configs)
-    station_configs = get_station_by_network(station_path, ['GE'])
+    station_configs = get_station_configs(station_path, num_station_configs)
+    # station_configs = get_station_by_network(station_path, ['GE'])
 
     print('Running with', len(station_configs), 'station configs')
     print('Running with', num_processes, 'processes')

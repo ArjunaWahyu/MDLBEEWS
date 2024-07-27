@@ -87,12 +87,12 @@ class TraceConsumer:
         try:
             # duplicate the data to 3 channels
             converter_np_array = np.array([
-                data['data'][40:120], 
-                data['data'][40:120], 
-                data['data'][40:120]
+                data['data'], 
+                data['data'], 
+                data['data']
                 ]).T
             sliding_array = np.lib.stride_tricks.sliding_window_view(
-                converter_np_array, (160, 3)).reshape(-1, 160, 3)
+                converter_np_array, (80, 3)).reshape(-1, 80, 3)
 
             # preprocessing
             preprocessed_array = np.apply_along_axis(
@@ -130,6 +130,7 @@ class TraceConsumer:
     def connectConsumer(self):
         for msg in self.consumer:
             data = msg.value
+            print(data)
             print(f"Delay: {time() - data['data_provider_time']}")
             start_time = time()
             self.executor.submit(self.process, data)

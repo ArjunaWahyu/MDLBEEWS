@@ -102,13 +102,13 @@ class TraceConsumer:
             # n check if p wave detected
             n = 20
             for i in range(len(predictions_p_wave) - n + 1):
-                if np.all(predictions_p_wave[i:i + n] >= 0.9):
+                if np.all(predictions_p_wave[i:i + n] >= 0.5):
                     p_wave_time = trace.stats.starttime.timestamp + i * trace.stats.delta
                     print(
                         f"Station: {trace.stats.station},\tChannel: {trace.stats.channel},\tSampling Rate: {trace.stats.sampling_rate},\tP Wave Detected at time: {p_wave_time}")
                     # get 4 seconds data before p wave time and 4 seconds data after p wave time
                     # p_wave_waveform = trace.data[i - 80:i + 80]
-                    p_wave_waveform = trace.data.tolist()
+                    p_wave_waveform = trace.data
                     # send to kafka
                     data = {
                         'network': trace.stats.network,
@@ -121,6 +121,7 @@ class TraceConsumer:
                         'p_wave_detector_time': time(),
                         'data': p_wave_waveform[i - 80:i + 80]
                     }
+                    print(data)
                     self.producer.send('loc_mag_topic', data, key=f"{data['station']}-{data['channel']}")
                     self.producer.flush()
                     break

@@ -13,6 +13,7 @@ services:
 
   kafka:
     image: wurstmeister/kafka
+    restart: always
     container_name: kafka
     ports:
       - "9092:9092"
@@ -21,15 +22,15 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      # KAFKA_LOG_RETENTION_MS: 600000  # 10 menit
-      # KAFKA_LOG_SEGMENT_BYTES: 1048576  # 1 MB
-      # KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1 GB
-      # KAFKA_HEAP_OPTS: "-Xmx256m -Xms256m -XX:+UseG1GC"  # Set JVM heap size to 256MB
+      KAFKA_LOG_RETENTION_MS: 600000  # 10 menit
+      KAFKA_LOG_SEGMENT_BYTES: 1048576  # 1 MB
+      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1 GB
+      KAFKA_HEAP_OPTS: "-Xmx256m -Xms256m -XX:+UseG1GC"  # Set JVM heap size to 256MB
       KAFKA_NUM_PARTITIONS: 3
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 500M
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     networks:
       - kafka_network
     depends_on:
@@ -101,21 +102,25 @@ services:
     networks:
       - kafka_network
     tty: true
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     depends_on:
       - kafka
     restart: always
 
-  data_consumer:
-    build:
-      context: ./data_consumer
-    deploy:
-      replicas: 1
-    networks:
-      - kafka_network
-    tty: true
-    depends_on:
-      - kafka
-    restart: always
+  # data_consumer:
+  #   build:
+  #     context: ./data_consumer
+  #   deploy:
+  #     replicas: 1
+  #   networks:
+  #     - kafka_network
+  #   tty: true
+  #   depends_on:
+  #     - kafka
+  #   restart: always
 
   p_wave_detector:
     build:
@@ -130,8 +135,31 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [ gpu ]
-      #   limits:
-      #     memory: 5G
+        limits:
+          memory: 5G
+    networks:
+      - kafka_network
+      - influxdb_network
+    tty: true
+    depends_on:
+      - kafka
+    restart: always
+
+  loc_mag_detector:
+    build:
+      context: ./loc_mag_detector
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      replicas: 1
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+        limits:
+          memory: 5G
     networks:
       - kafka_network
       - influxdb_network
@@ -145,6 +173,9 @@ services:
       context: ./data_saver
     deploy:
       replicas: 1
+      resources:
+        limits:
+          memory: 1G
     volumes:
       - ./data_saver/data_archive:/mnt/data
     networks:
@@ -168,6 +199,10 @@ services:
     networks:
       - kafka_network
     tty: true
+    deploy:
+      resources:
+        limits:
+          memory: 1G
     depends_on:
       - kafka
     restart: always

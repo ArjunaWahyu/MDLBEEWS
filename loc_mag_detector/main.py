@@ -156,6 +156,6 @@ if __name__ == '__main__':
 
     traceConsumer.create_topic(kafka_topic, num_partitions, replication_factor, bootstrap_servers)
 
-    traceConsumer.configureConnection('loc_mag_topic', 'trace_group', 'kafka:9092')
+    traceConsumer.configureConnection('loc_mag_topic', 'loc_mag_group', 'kafka:9092')
     traceConsumer.configureProducer(server)
     traceConsumer.connectConsumer()

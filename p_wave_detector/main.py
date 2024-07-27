@@ -108,7 +108,7 @@ class TraceConsumer:
                         f"Station: {trace.stats.station},\tChannel: {trace.stats.channel},\tSampling Rate: {trace.stats.sampling_rate},\tP Wave Detected at time: {p_wave_time}")
                     # get 4 seconds data before p wave time and 4 seconds data after p wave time
                     # p_wave_waveform = trace.data[i - 80:i + 80]
-                    p_wave_waveform = trace.data
+                    p_wave_waveform = trace.data.tolist()[i + 40:i + 120]
                     # send to kafka
                     data = {
                         'network': trace.stats.network,
@@ -119,7 +119,7 @@ class TraceConsumer:
                         'p_wave_time': p_wave_time,
                         'data_provider_time': trace.stats.endtime.timestamp,
                         'p_wave_detector_time': time(),
-                        'data': p_wave_waveform[i - 80:i + 80]
+                        'data': p_wave_waveform
                     }
                     print(data)
                     self.producer.send('loc_mag_topic', data, key=f"{data['station']}-{data['channel']}")

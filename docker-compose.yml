@@ -3,6 +3,7 @@ version: '3.8'
 services:
   zookeeper:
     image: wurstmeister/zookeeper
+    restart: always
     container_name: zookeeper
     ports:
       - "2182:2181"
@@ -22,11 +23,11 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LOG_RETENTION_MS: 600000  # 10 menit
-      KAFKA_LOG_SEGMENT_BYTES: 1048576  # 1 MB
-      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1 GB
-      KAFKA_HEAP_OPTS: "-Xmx256m -Xms256m -XX:+UseG1GC"  # Set JVM heap size to 256MB
-      KAFKA_NUM_PARTITIONS: 3
+      # KAFKA_LOG_RETENTION_MS: 600000  # 10 menit
+      # KAFKA_LOG_SEGMENT_BYTES: 1048576  # 1 MB
+      # KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1 GB
+      # KAFKA_HEAP_OPTS: "-Xmx256m -Xms256m -XX:+UseG1GC"  # Set JVM heap size to 256MB
+      KAFKA_NUM_PARTITIONS: 6
     deploy:
       resources:
         limits:
@@ -168,27 +169,27 @@ services:
       - kafka
     restart: always
 
-  data_saver:
-    build:
-      context: ./data_saver
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          memory: 1G
-    volumes:
-      - ./data_saver/data_archive:/mnt/data
-    networks:
-      - kafka_network
-      - influxdb_network
-      - mongo_network
-    tty: true
-    depends_on:
-      - kafka
-      - influxdb
-      - mongo
-      - mongo-express
-    restart: always
+  # data_saver:
+  #   build:
+  #     context: ./data_saver
+  #   deploy:
+  #     replicas: 1
+  #     resources:
+  #       limits:
+  #         memory: 1G
+  #   volumes:
+  #     - ./data_saver/data_archive:/mnt/data
+  #   networks:
+  #     - kafka_network
+  #     - influxdb_network
+  #     - mongo_network
+  #   tty: true
+  #   depends_on:
+  #     - kafka
+  #     - influxdb
+  #     - mongo
+  #     - mongo-express
+  #   restart: always
 
   api_server:
     container_name: api_server

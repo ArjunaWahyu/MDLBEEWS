@@ -121,7 +121,7 @@ class TraceConsumer:
                         'p_wave_detector_time': time(),
                         'data': p_wave_waveform
                     }
-                    print(data)
+                    # print(data)
                     self.producer.send('loc_mag_topic', data, key=f"{data['station']}-{data['channel']}")
                     self.producer.flush()
                     break
@@ -147,6 +147,7 @@ class TraceConsumer:
         return tables
 
     def process(self, data):
+        start_time = time()
         # concatenate last 4 seconds waveform with current waveform
         key = f"{data['station']}-{data['channel']}"
         if key in self.last_waveform:
@@ -164,12 +165,13 @@ class TraceConsumer:
             self.predict(trace)
             # delete last 4 seconds waveform
             self.last_waveform[key] = []
+            print(f"Delay: {start_time - data['data_provider_time']}\tProcess Time: {time() - start_time}")
 
     def connectConsumer(self):
         for msg in self.consumer:
             data = msg.value
-            print(f"Delay: {time() - data['data_provider_time']}")
-            start_time = time()
+            # print(f"Delay: {time() - data['data_provider_time']}")
+
             # concate last 4 seconds waveform with current waveform
             # self.process(data)
             self.executor.submit(self.process, data)
@@ -184,8 +186,6 @@ class TraceConsumer:
             cut_length = int(4 * data['sampling_rate'])
             if len(self.last_waveform[key]) > cut_length:
                 self.last_waveform[key] = self.last_waveform[key][-cut_length:]
-
-            print(f"Process Time: {time() - start_time}")
 
 if __name__ == '__main__':
     influxdb_url = "http://influxdb:8086"

@@ -37,47 +37,47 @@ services:
     depends_on:
       - zookeeper
 
-  mongo:
-    image: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-        - ./mongo:/data/db
-    networks:
-      - mongo_network
+  # mongo:
+  #   image: mongo
+  #   restart: always
+  #   ports:
+  #     - 27017:27017
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: example
+  #   volumes:
+  #       - ./mongo:/data/db
+  #   networks:
+  #     - mongo_network
 
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: password
-    networks:
-      - mongo_network
-    depends_on:
-      - mongo
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
+  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+  #     ME_CONFIG_BASICAUTH_USERNAME: admin
+  #     ME_CONFIG_BASICAUTH_PASSWORD: password
+  #   networks:
+  #     - mongo_network
+  #   depends_on:
+  #     - mongo
 
-  influxdb:
-    image: influxdb:latest
-    container_name: influxdb
-    ports:
-      - "8086:8086"
-    volumes:
-      - ./influxDB:/var/lib/influxdb
-    networks:
-      - influxdb_network
-    env_file:
-      - ./influxDB/.env
-    restart: always
+  # influxdb:
+  #   image: influxdb:latest
+  #   container_name: influxdb
+  #   ports:
+  #     - "8086:8086"
+  #   volumes:
+  #     - ./influxDB:/var/lib/influxdb
+  #   networks:
+  #     - influxdb_network
+  #   env_file:
+  #     - ./influxDB/.env
+  #   restart: always
 
   # grafana:
   #   image: grafana/grafana:latest
@@ -137,7 +137,7 @@ services:
               count: 1
               capabilities: [ gpu ]
         limits:
-          memory: 5G
+          memory: 4G
     networks:
       - kafka_network
       - influxdb_network
@@ -160,7 +160,7 @@ services:
               count: 1
               capabilities: [ gpu ]
         limits:
-          memory: 5G
+          memory: 4G
     networks:
       - kafka_network
       - influxdb_network

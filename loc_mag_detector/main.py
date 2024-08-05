@@ -125,16 +125,18 @@ class TraceConsumer:
         return tables
 
     def process(self, data):
+        start_time = time()
         self.predict(data)
+        print(f"Delay: {start_time - data['data_provider_time']}\tProcess Time: {time() - start_time}")
 
     def connectConsumer(self):
         for msg in self.consumer:
             data = msg.value
-            print(data)
-            print(f"Delay: {time() - data['data_provider_time']}")
-            start_time = time()
+            # print(data)
+            # print(f"Delay: {time() - data['data_provider_time']}")
+            # start_time = time()
             self.executor.submit(self.process, data)
-            print(f"Process Time: {time() - start_time}")
+            # print(f"Process Time: {time() - start_time}")
 
 if __name__ == '__main__':
     influxdb_url = "http://influxdb:8086"

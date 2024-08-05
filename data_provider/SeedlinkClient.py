@@ -79,16 +79,16 @@ class SeedlinkClient(EasySeedLinkClient):
             'data_provider_time': time.time(),
             'data': trace.data.tolist()
         }
-        self.producer.send('trace_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
-        self.producer.flush()
+        # self.producer.send('trace_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
+        # self.producer.flush()
 
         if trace.stats.channel.endswith('Z'):
             self.producer.send('p_wave_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
             self.producer.flush()
 
-        data = None
         # self.producer.send('trace_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
-        # print(f"Delay {data['station']}\t{data['channel']} : {time.time() - trace.stats.endtime.timestamp}")
+        print(f"Delay {data['station']}\t{data['channel']} : {time.time() - trace.stats.endtime.timestamp}")
+        data = None
 
     def on_data(self, trace):
         self.executor.submit(self.send_to_kafka, trace)

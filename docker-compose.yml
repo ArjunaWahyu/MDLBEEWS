@@ -129,7 +129,7 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     deploy:
-      replicas: 2
+      replicas: 3
       resources:
         reservations:
           devices:
@@ -137,7 +137,7 @@ services:
               count: 1
               capabilities: [ gpu ]
         limits:
-          memory: 4G
+          memory: 5G
     networks:
       - kafka_network
       - influxdb_network

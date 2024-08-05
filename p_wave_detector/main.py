@@ -18,7 +18,7 @@ class TraceConsumer:
             './model_p_wave.h5', compile=False)
         self.query_api = self.connectInfluxDB()
         self.last_waveform = {}
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=32)
 
     def configureConnection(self, topic, group, server):
         self.consumer = KafkaConsumer(
@@ -146,7 +146,7 @@ class TraceConsumer:
         tables = self.query_api.query(query)
         return tables
 
-    def process(self, data):
+    def process(self, data, data_delay):
         start_time = time()
         # concatenate last 4 seconds waveform with current waveform
         key = f"{data['station']}-{data['channel']}"
@@ -165,16 +165,18 @@ class TraceConsumer:
             self.predict(trace)
             # delete last 4 seconds waveform
             self.last_waveform[key] = []
-            print(f"Delay: {start_time - data['data_provider_time']}\tProcess Time: {time() - start_time}")
+
+        # print(f"Process Time: {time() - start_time}")
+        print(f"Delay Kafka: {data_delay}\tDelay Start: {start_time - data['data_provider_time']}\tProcess Time: {time() - start_time}")
 
     def connectConsumer(self):
         for msg in self.consumer:
             data = msg.value
-            # print(f"Delay: {time() - data['data_provider_time']}")
+            data_delay = time() - data['data_provider_time']
 
             # concate last 4 seconds waveform with current waveform
             # self.process(data)
-            self.executor.submit(self.process, data)
+            self.executor.submit(self.process, data, data_delay)
             # save only last 4 seconds waveform
             key = f"{data['station']}-{data['channel']}"
             if key in self.last_waveform:

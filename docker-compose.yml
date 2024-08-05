@@ -27,7 +27,7 @@ services:
       # KAFKA_LOG_SEGMENT_BYTES: 1048576  # 1 MB
       # KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1 GB
       # KAFKA_HEAP_OPTS: "-Xmx256m -Xms256m -XX:+UseG1GC"  # Set JVM heap size to 256MB
-      KAFKA_NUM_PARTITIONS: 6
+      KAFKA_NUM_PARTITIONS: 3
     deploy:
       resources:
         limits:

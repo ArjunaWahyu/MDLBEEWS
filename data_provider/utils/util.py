@@ -26,16 +26,18 @@ def get_station_configs(station_path, num_seednames=6000):
 
     return station_configs
 
-def get_station_by_network(station_path, network):
+def get_station_by_network(station_path, network, num_seednames=6000):
     added_station_channels = []
     with open(station_path, 'r') as file:
         stations = json.load(file)
 
     station_configs = []
+    countSeednames = 0
+    isStopped = False
     for station in stations:
         if station['network'] in network:
             for seedname in station['seednames']:
-                if f'{station["network"]}.{station["station_name"]}.{seedname}' in added_station_channels:
+                if f'{station["network"]}.{station["station_name"]}.{seedname}' in added_station_channels or not seedname.endswith('Z'):
                     continue
                 station_configs.append({
                     'network': station['network'],
@@ -43,6 +45,15 @@ def get_station_by_network(station_path, network):
                     'seedname': seedname
                 })
                 added_station_channels.append(f'{station["network"]}.{station["station_name"]}.{seedname}')
+                
+                countSeednames += 1
+                
+                if countSeednames == num_seednames:
+                    isStopped = True
+                    break
+                
+            if isStopped:
+                break
 
     return station_configs
 

@@ -9,6 +9,7 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from kafka.admin import KafkaAdminClient, NewTopic
 import concurrent.futures
+import threading
 
 class TraceConsumer:
     def __init__(self):
@@ -18,7 +19,7 @@ class TraceConsumer:
             './model_loc_mag.h5', compile=False)
         self.query_api = self.connectInfluxDB()
         self.last_waveform = {}
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=108)
 
     def configureConnection(self, topic, group, server):
         self.consumer = KafkaConsumer(
@@ -127,7 +128,7 @@ class TraceConsumer:
     def process(self, data):
         start_time = time()
         self.predict(data)
-        print(f"Delay: {start_time - data['data_provider_time']}\tProcess Time: {time() - start_time}")
+        print(f"Data Delay: {start_time - data['p_wave_detector_time']}\tAll Delay: {start_time - data['data_provider_time']}\tProcess Time: {time() - start_time}")
 
     def connectConsumer(self):
         for msg in self.consumer:
@@ -135,7 +136,8 @@ class TraceConsumer:
             # print(data)
             # print(f"Delay: {time() - data['data_provider_time']}")
             # start_time = time()
-            self.executor.submit(self.process, data)
+            # self.executor.submit(self.process, data)
+            threading.Thread(target=self.process, args=(data,)).start()
             # print(f"Process Time: {time() - start_time}")
 
 if __name__ == '__main__':

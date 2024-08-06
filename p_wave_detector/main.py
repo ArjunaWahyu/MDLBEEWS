@@ -9,6 +9,7 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from kafka.admin import KafkaAdminClient, NewTopic
 import concurrent.futures
+import threading
 
 class TraceConsumer:
     def __init__(self):
@@ -18,7 +19,7 @@ class TraceConsumer:
             './model_p_wave.h5', compile=False)
         self.query_api = self.connectInfluxDB()
         self.last_waveform = {}
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=32)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=108)
 
     def configureConnection(self, topic, group, server):
         self.consumer = KafkaConsumer(
@@ -83,7 +84,7 @@ class TraceConsumer:
     def preprocessingPWave(self, data: np.ndarray):
         return data / np.max(np.abs(data), axis=0)
 
-    def predict(self, trace):
+    def predict(self, trace, data_provider_time):
         try:
             # duplicate the trace to 3 channels
             converter_np_array = np.array(
@@ -99,32 +100,64 @@ class TraceConsumer:
             predictions_p_wave = self.model.predict(
                 preprocessed_array, verbose=0)
 
-            # n check if p wave detected
+            # # n check if p wave detected
+            # n = 20
+            # for i in range(len(predictions_p_wave) - n + 1):
+            #     if np.all(predictions_p_wave[i:i + n] >= 0.9):
+            #         p_wave_time = trace.stats.starttime.timestamp + i * trace.stats.delta
+            #         print(
+            #             f"Station: {trace.stats.station},\tChannel: {trace.stats.channel},\tSampling Rate: {trace.stats.sampling_rate},\tP Wave Detected at time: {p_wave_time}")
+            #         # get 4 seconds data before p wave time and 4 seconds data after p wave time
+            #         # p_wave_waveform = trace.data[i - 80:i + 80]
+            #         p_wave_waveform = trace.data.tolist()[i + 40:i + 120]
+            #         # send to kafka
+            #         data = {
+            #             'network': trace.stats.network,
+            #             'station': trace.stats.station,
+            #             'location': trace.stats.location,
+            #             'channel': trace.stats.channel,
+            #             'sampling_rate': trace.stats.sampling_rate,
+            #             'p_wave_time': p_wave_time,
+            #             'data_provider_time': data_provider_time,
+            #             'p_wave_detector_time': time(),
+            #             'data': p_wave_waveform
+            #         }
+            #         # print(data)
+            #         self.producer.send('loc_mag_topic', data, key=f"{data['station']}-{data['channel']}")
+            #         self.producer.flush()
+            #         break
+
+            # get max value and index of max value from predictions 20 points
+            idx = 0
+            max_value = 0
             n = 20
             for i in range(len(predictions_p_wave) - n + 1):
-                if np.all(predictions_p_wave[i:i + n] >= 0.5):
+                if np.all(predictions_p_wave[i:i + n] >= 0.9):
                     p_wave_time = trace.stats.starttime.timestamp + i * trace.stats.delta
-                    print(
-                        f"Station: {trace.stats.station},\tChannel: {trace.stats.channel},\tSampling Rate: {trace.stats.sampling_rate},\tP Wave Detected at time: {p_wave_time}")
-                    # get 4 seconds data before p wave time and 4 seconds data after p wave time
-                    # p_wave_waveform = trace.data[i - 80:i + 80]
-                    p_wave_waveform = trace.data.tolist()[i + 40:i + 120]
-                    # send to kafka
-                    data = {
-                        'network': trace.stats.network,
-                        'station': trace.stats.station,
-                        'location': trace.stats.location,
-                        'channel': trace.stats.channel,
-                        'sampling_rate': trace.stats.sampling_rate,
-                        'p_wave_time': p_wave_time,
-                        'data_provider_time': trace.stats.endtime.timestamp,
-                        'p_wave_detector_time': time(),
-                        'data': p_wave_waveform
-                    }
-                    # print(data)
-                    self.producer.send('loc_mag_topic', data, key=f"{data['station']}-{data['channel']}")
-                    self.producer.flush()
-                    break
+                    if max_value < np.max(predictions_p_wave[i:i + n]):
+                        max_value = np.max(predictions_p_wave[i:i + n])
+                        idx = i
+            if max_value == 0:
+                return
+
+            # get 4 seconds data before p wave time and 4 seconds data after p wave time
+            p_wave_waveform = trace.data.tolist()[idx + 40:idx + 120]
+            # send to kafka
+            data = {
+                'network': trace.stats.network,
+                'station': trace.stats.station,
+                'location': trace.stats.location,
+                'channel': trace.stats.channel,
+                'sampling_rate': trace.stats.sampling_rate,
+                'p_wave_time': p_wave_time,
+                'data_provider_time': data_provider_time,
+                'p_wave_detector_time': time(),
+                'data': p_wave_waveform
+            }
+            # print(data)
+
+            self.producer.send('loc_mag_topic', data, key=f"{data['station']}-{data['channel']}")
+            self.producer.flush()
 
         except Exception as e:
             print(
@@ -162,12 +195,13 @@ class TraceConsumer:
         new_length = int(len(data['data']) / ratio)
         if new_length >= 160:
             trace = self.setTrace(data)
-            self.predict(trace)
+            self.predict(trace, data['data_provider_time'])
             # delete last 4 seconds waveform
             self.last_waveform[key] = []
 
         # print(f"Process Time: {time() - start_time}")
-        print(f"Delay Kafka: {data_delay}\tDelay Start: {start_time - data['data_provider_time']}\tProcess Time: {time() - start_time}")
+        print(f"Delay Kafka: {data_delay}\tDelay Start: {start_time - data['data_provider_time'] - data_delay}\tProcess Time: {time() - start_time}")
+
 
     def connectConsumer(self):
         for msg in self.consumer:
@@ -176,7 +210,9 @@ class TraceConsumer:
 
             # concate last 4 seconds waveform with current waveform
             # self.process(data)
-            self.executor.submit(self.process, data, data_delay)
+            # self.executor.submit(self.process, data, data_delay)
+            threading.Thread(target=self.process, args=(data, data_delay)).start()
+
             # save only last 4 seconds waveform
             key = f"{data['station']}-{data['channel']}"
             if key in self.last_waveform:

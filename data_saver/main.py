@@ -7,6 +7,7 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 import logging
 import concurrent.futures
+import threading
 from pymongo import MongoClient
 import os
 import numpy as np
@@ -245,24 +246,39 @@ def consume_and_save_data():
         value_deserializer=lambda x: json.loads(x.decode('utf-8'))
     )
 
-    with multiprocessing.Pool(processes=12) as pool:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=24) as executor:
-            try:
-                for msg in consumer:
-                    data = msg.value
-                    logging.info(
-                        f"Delay: {time.time() - data['data_provider_time']}")
+    # with multiprocessing.Pool(processes=12) as pool:
+    #     with concurrent.futures.ThreadPoolExecutor(max_workers=24) as executor:
+    #         try:
+    #             for msg in consumer:
+    #                 data = msg.value
+    #                 logging.info(
+    #                     f"Delay: {time.time() - data['data_provider_time']}")
 
-                    pool.apply_async(save_data_to_influxdb, args=(data,))
-                    pool.apply_async(save_data_to_mongodb, args=(data,))
-                    # pool.apply_async(save_data_to_mseed, args=(data,))
-            except KeyboardInterrupt:
-                logging.info("Shutting down gracefully...")
-            finally:
-                logging.info("Waiting for all subprocesses to complete...")
-                pool.close()
-                pool.join()
+    #                 pool.apply_async(save_data_to_influxdb, args=(data,))
+    #                 pool.apply_async(save_data_to_mongodb, args=(data,))
+    #                 # pool.apply_async(save_data_to_mseed, args=(data,))
+    #         except KeyboardInterrupt:
+    #             logging.info("Shutting down gracefully...")
+    #         finally:
+    #             logging.info("Waiting for all subprocesses to complete...")
+    #             pool.close()
+    #             pool.join()
 
+    try:
+        for msg in consumer:
+            data = msg.value
+            logging.info(
+                f"Delay: {time.time() - data['data_provider_time']}")
+
+            threading.Thread(target=save_data_to_influxdb, args=(data,)).start()
+            threading.Thread(target=save_data_to_mongodb, args=(data,)).start()
+            threading.Thread(target=save_data_to_mseed, args=(data,)).start()
+    except KeyboardInterrupt:
+        logging.info("Shutting down gracefully...")
+    finally:
+        logging.info("Waiting for all threads to complete...")
+        consumer.close()
+        consumer.join()
 
 if __name__ == "__main__":
     initialize_system()

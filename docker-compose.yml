@@ -31,70 +31,70 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 5G
     networks:
       - kafka_network
     depends_on:
       - zookeeper
 
-  # mongo:
-  #   image: mongo
-  #   restart: always
-  #   ports:
-  #     - 27017:27017
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: example
-  #   volumes:
-  #       - ./mongo:/data/db
-  #   networks:
-  #     - mongo_network
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+        - ./mongo:/data/db
+    networks:
+      - mongo_network
 
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-  #     ME_CONFIG_BASICAUTH_USERNAME: admin
-  #     ME_CONFIG_BASICAUTH_PASSWORD: password
-  #   networks:
-  #     - mongo_network
-  #   depends_on:
-  #     - mongo
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+    networks:
+      - mongo_network
+    depends_on:
+      - mongo
 
-  # influxdb:
-  #   image: influxdb:latest
-  #   container_name: influxdb
-  #   ports:
-  #     - "8086:8086"
-  #   volumes:
-  #     - ./influxDB:/var/lib/influxdb
-  #   networks:
-  #     - influxdb_network
-  #   env_file:
-  #     - ./influxDB/.env
-  #   restart: always
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./influxDB:/var/lib/influxdb
+    networks:
+      - influxdb_network
+    env_file:
+      - ./influxDB/.env
+    restart: always
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   container_name: grafana
-  #   ports:
-  #     - "4000:3000"  # Menggunakan port 4000 untuk Grafana
-  #   networks:
-  #     - influxdb_network
-  #   environment:
-  #     GF_SERVER_ROOT_URL: http://localhost:4000  # Memastikan URL root sesuai
-  #     GF_SECURITY_ADMIN_USER: admin
-  #     GF_SECURITY_ADMIN_PASSWORD: 12345678
-  #   volumes:
-  #     - ./grafana:/var/lib/grafana
-  #   restart: always
-  #   depends_on:
-  #     - influxdb
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "4000:3000"  # Menggunakan port 4000 untuk Grafana
+    networks:
+      - influxdb_network
+    environment:
+      GF_SERVER_ROOT_URL: http://localhost:4000  # Memastikan URL root sesuai
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: 12345678
+    volumes:
+      - ./grafana:/var/lib/grafana
+    restart: always
+    depends_on:
+      - influxdb
 
   data_provider:
     container_name: data_provider
@@ -103,10 +103,10 @@ services:
     networks:
       - kafka_network
     tty: true
-    deploy:
-      resources:
-        limits:
-          memory: 1G
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 1G
     depends_on:
       - kafka
     restart: always
@@ -126,18 +126,18 @@ services:
   p_wave_detector:
     build:
       context: ./p_wave_detector
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
     deploy:
       replicas: 3
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
-        limits:
-          memory: 5G
+      # resources:
+        # reservations:
+        #   devices:
+        #     - driver: nvidia
+        #       count: 1
+        #       capabilities: [ gpu ]
+        # limits:
+        #   memory: 5G
     networks:
       - kafka_network
       - influxdb_network
@@ -149,18 +149,18 @@ services:
   loc_mag_detector:
     build:
       context: ./loc_mag_detector
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
     deploy:
       replicas: 1
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
-        limits:
-          memory: 4G
+      # resources:
+        # reservations:
+        #   devices:
+        #     - driver: nvidia
+        #       count: 1
+        #       capabilities: [ gpu ]
+        # limits:
+        #   memory: 4G
     networks:
       - kafka_network
       - influxdb_network
@@ -169,27 +169,27 @@ services:
       - kafka
     restart: always
 
-  # data_saver:
-  #   build:
-  #     context: ./data_saver
-  #   deploy:
-  #     replicas: 1
-  #     resources:
-  #       limits:
-  #         memory: 1G
-  #   volumes:
-  #     - ./data_saver/data_archive:/mnt/data
-  #   networks:
-  #     - kafka_network
-  #     - influxdb_network
-  #     - mongo_network
-  #   tty: true
-  #   depends_on:
-  #     - kafka
-  #     - influxdb
-  #     - mongo
-  #     - mongo-express
-  #   restart: always
+  data_saver:
+    build:
+      context: ./data_saver
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          memory: 5G
+    volumes:
+      - ./data_saver/data_archive:/mnt/data
+    networks:
+      - kafka_network
+      - influxdb_network
+      - mongo_network
+    tty: true
+    depends_on:
+      - kafka
+      - influxdb
+      - mongo
+      - mongo-express
+    restart: always
 
   api_server:
     container_name: api_server

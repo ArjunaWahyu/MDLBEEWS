@@ -22,7 +22,8 @@ logging.basicConfig(level=logging.INFO,
 bootstrap_servers = 'kafka:9092'
 kafka_topic = 'trace_topic'
 group_id = 'data_saver_group'
-mongo_url = "mongodb://root:example@mongo:27017/"
+# mongo_url = "mongodb://root:example@mongo:27017/"
+mongo_url = "mongodb://mongo:27017/"
 influxdb_url = "http://influxdb:8086"
 influxdb_token = "eFWu0UGcCzvGAX1w-z43heHjfDk8swujfryImhIsTrAkNJOgfMRSYsgYVki-QTiWHDwKLJtxsSnCmHhxisCN1w=="
 influxdb_org = "owner"
@@ -30,19 +31,23 @@ influxdb_bucket = "eews"
 
 # Initialize MongoDB connection
 mongo_client = MongoClient(mongo_url)
+
 mongo_db = mongo_client['timeseries_db']
 
 # Create time series collection if it doesn't exist
-if 'timeseries_collection' not in mongo_db.list_collection_names():
-    mongo_db.create_collection(
-        'timeseries_collection',
-        timeseries={
-            'timeField': 'timestamp',
-            'metaField': 'metadata',
-            'granularity': 'seconds'
-        }
-    )
-mongo_collection = mongo_db['timeseries_collection']
+try:
+    if 'timeseries_collection' not in mongo_db.list_collection_names():
+        mongo_db.create_collection(
+            'timeseries_collection',
+            timeseries={
+                'timeField': 'timestamp',
+                'metaField': 'metadata',
+                'granularity': 'seconds'
+            }
+        )
+    mongo_collection = mongo_db['timeseries_collection']
+except Exception as e:
+    logging.error(f"Error initializing MongoDB: {e}")
 
 # Initialize InfluxDB client
 influxdb_client = InfluxDBClient(

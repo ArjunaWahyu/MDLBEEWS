@@ -1,4 +1,6 @@
-FROM python:3.11
+# FROM python:3.11
+# lightest image for python
+FROM python:3.11-slim
 
 WORKDIR /app
 

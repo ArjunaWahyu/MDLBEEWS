@@ -5,6 +5,8 @@ from PyQt5.QtCore import QThread, pyqtSignal
 import pyqtgraph as pg
 import time
 import random
+import obspy
+import numpy as np
 
 class SocketIOClient(QThread):
     data_received = pyqtSignal(dict)
@@ -23,7 +25,39 @@ class SocketIOClient(QThread):
 
         @self.sio.on('waves-data')
         def on_message(data):
+            # self.data_received.emit(data)
+            trace = self.interpolate(data)
+            data['data'] = trace.data
+            data['sampling_rate'] = trace.stats.sampling_rate
+            data['delta'] = trace.stats.delta
+            data['npts'] = trace.stats.npts
+            data['calib'] = trace.stats.calib
+            data['data_quality'] = trace.stats.dataquality
+            data['num_samples'] = trace.stats.numsamples
+            data['sample_cnt'] = trace.stats.samplecnt
+            data['sample_type'] = trace.stats.sampletype
             self.data_received.emit(data)
+
+    def interpolate(self, data):
+        trace = obspy.Trace(np.array(data['data']))
+        trace.stats.network = data['network']
+        trace.stats.station = data['station']
+        trace.stats.location = data['location']
+        trace.stats.channel = data['channel']
+        trace.stats.starttime = obspy.UTCDateTime(data['start_time'])
+        trace.stats.sampling_rate = data['sampling_rate']
+        trace.stats.delta = data['delta']
+        trace.stats.npts = data['npts']
+        trace.stats.calib = data['calib']
+        trace.stats.dataquality = data['data_quality']
+        trace.stats.numsamples = data['num_samples']
+        trace.stats.samplecnt = data['sample_cnt']
+        trace.stats.sampletype = data['sample_type']
+
+        # interpolate to 20 Hz
+        trace.interpolate(sampling_rate=20)
+
+        return trace
 
     def run(self):
         self.sio.connect('http://localhost:3333')

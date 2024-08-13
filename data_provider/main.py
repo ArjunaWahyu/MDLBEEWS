@@ -12,8 +12,8 @@ if __name__ == '__main__':
     kafka_topic = 'trace_topic'
     # kafka_topic = 'p_wave_topic'
     kafka_topic2 = 'p_wave_topic'
-    num_partitions = 3
-    num_partitions2 = 3
+    num_partitions = 1
+    num_partitions2 = 1
     replication_factor = 1
 
     while not check_kafka_connection(bootstrap_servers):

@@ -1,3 +1,4 @@
 api_server/node_modules
 data_saver/data_archive
 mongo/*
+grafana/*

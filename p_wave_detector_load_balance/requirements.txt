@@ -1,0 +1,7 @@
+kafka-python
+obspy
+numpy
+tensorflow==2.10.0
+# tensorflow
+fastapi
+uvicorn

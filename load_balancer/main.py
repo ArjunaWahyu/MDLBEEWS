@@ -29,7 +29,7 @@ class TraceConsumer:
       data = msg.value
       print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tStation: {data['station']},\tChannel: {data['channel']}")
       response = requests.post('http://p_wave_detector_load_balance:8004/trace', json=data)
-      
+
 if __name__ == '__main__':
   consumer = TraceConsumer()
   server = 'kafka:9092'
@@ -40,25 +40,3 @@ if __name__ == '__main__':
 
   consumer.configureConnection('p_wave_topic', 'load_balancer_group', 'kafka:9092')
   consumer.connectConsumer()
-
-
-
-
-# while True:
-#     print("Sending data to load balancer...")
-#     data = {
-#         "network": "IU",
-#         "station": "ANMO",
-#         "location": "00",
-#         "channel": "BHZ",
-#         "start_time": "2021-07-01T00:00:00",
-#         "sampling_rate": 40,
-#         "delta": 0.025,
-#         "npts": 6000,
-#         "calib": 1.0,
-#         "data_quality": "D"
-#     }
-
-#     response = requests.post('http://p_wave_detector_load_balance:8004/trace', json=data)
-#     print(response.text)
-#     sleep(0.5)

@@ -2,7 +2,8 @@ from obspy.clients.seedlink.easyseedlink import EasySeedLinkClient
 from kafka import KafkaProducer
 import json
 import time
-import concurrent.futures
+# import concurrent.futures
+import threading
 
 
 # Subclass the client class
@@ -14,7 +15,7 @@ class SeedlinkClient(EasySeedLinkClient):
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             key_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+        # self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
 
         self.data_station_channel = {}
 
@@ -81,13 +82,13 @@ class SeedlinkClient(EasySeedLinkClient):
             'data': trace.data.tolist()
         }
         self.producer.send('trace_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
-        # self.producer.flush()
+        self.producer.flush()
 
         if trace.stats.channel.endswith('Z'):
             self.producer.send('p_wave_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
-            # self.producer.flush()
+            self.producer.flush()
 
-        self.producer.flush()
+        # self.producer.flush()
 
 
         # self.producer.send('trace_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
@@ -95,8 +96,10 @@ class SeedlinkClient(EasySeedLinkClient):
         data = None
 
     def on_data(self, trace):
-        self.executor.submit(self.send_to_kafka, trace)
-        self.executor.submit(self.calculate_gap_time, trace)
+        # self.executor.submit(self.send_to_kafka, trace)
+        # self.executor.submit(self.calculate_gap_time, trace)
+        threading.Thread(target=self.send_to_kafka, args=(trace,)).start()
+        threading.Thread(target=self.calculate_gap_time, args=(trace,)).start()
 
     def on_seedlink_error(self):
         print('Seedlink error')

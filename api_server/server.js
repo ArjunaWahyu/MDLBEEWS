@@ -11,7 +11,8 @@ const initializeConsumer = async () => {
   console.log("Initializing Kafka consumer...");
   const kafka = new Kafka({
     clientId: 'api-server',
-    brokers: ['kafka:9092'] // ganti dengan alamat broker Kafka Anda
+    // brokers: ['kafka:9092'] // ganti dengan alamat broker Kafka Anda
+    brokers: ['kafka1:9092', 'kafka2:9093', 'kafka3:9094'] // ganti dengan alamat broker Kafka Anda
   });
 
   const consumer = kafka.consumer({ groupId: 'api-server-group' });

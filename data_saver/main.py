@@ -19,7 +19,8 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 
 # Global variables
-bootstrap_servers = 'kafka:9092'
+# bootstrap_servers = 'kafka:9092'
+bootstrap_servers = ['kafka1:9092', 'kafka2:9093']
 kafka_topic = 'trace_topic'
 group_id = 'data_saver_group'
 # mongo_url = "mongodb://root:example@mongo:27017/"
@@ -272,12 +273,14 @@ def consume_and_save_data():
     try:
         for msg in consumer:
             data = msg.value
-            logging.info(
-                f"Delay: {time.time() - data['data_provider_time']}")
 
+            start_time = time.time()
             threading.Thread(target=save_data_to_influxdb, args=(data,)).start()
             threading.Thread(target=save_data_to_mongodb, args=(data,)).start()
             threading.Thread(target=save_data_to_mseed, args=(data,)).start()
+
+            logging.info(f"Delay: {time.time() - data['data_provider_time']}\tProcessing Time: {time.time() - start_time}")
+
     except KeyboardInterrupt:
         logging.info("Shutting down gracefully...")
     finally:

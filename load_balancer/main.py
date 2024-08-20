@@ -3,6 +3,7 @@ from kafka import KafkaConsumer
 from kafka.admin import KafkaAdminClient
 from time import sleep
 import requests
+import time
 
 class TraceConsumer:
   def __init__(self):
@@ -27,16 +28,19 @@ class TraceConsumer:
   def connectConsumer(self):
     for msg in self.consumer:
       data = msg.value
-      print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tStation: {data['station']},\tChannel: {data['channel']}")
+      # print broker info
+      # print(msg)
+      print(f"Partition: {msg.partition},\tOffset: {msg.offset},\tStation: {data['station']},\tChannel: {data['channel']}\tDelay Kafka: {time.time() - data['data_provider_time']}")
       response = requests.post('http://p_wave_detector_load_balance:8004/trace', json=data)
 
 if __name__ == '__main__':
   consumer = TraceConsumer()
-  server = 'kafka:9092'
+  # server = 'kafka:9092'
+  server = ['kafka3:9094']
   topic = 'p_wave_topic'
 
   while not consumer.topic_exists(topic, server):
     sleep(3)
 
-  consumer.configureConnection('p_wave_topic', 'load_balancer_group', 'kafka:9092')
+  consumer.configureConnection('p_wave_topic', 'load_balancer_group', server)
   consumer.connectConsumer()

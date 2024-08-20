@@ -33,7 +33,8 @@ async def websocket_endpoint(websocket: WebSocket):
 def consume():
     consumer = KafkaConsumer(
         'trace_topic',
-        bootstrap_servers='kafka:9092',
+        # bootstrap_servers='kafka:9092',
+        bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'],
         group_id='api-server-group',
         auto_offset_reset='earliest',
         key_deserializer=lambda k: json.loads(k.decode('utf-8')),

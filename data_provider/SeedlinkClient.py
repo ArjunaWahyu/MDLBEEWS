@@ -2,7 +2,7 @@ from obspy.clients.seedlink.easyseedlink import EasySeedLinkClient
 from kafka import KafkaProducer
 import json
 import time
-# import concurrent.futures
+import concurrent.futures
 import threading
 
 
@@ -11,11 +11,12 @@ class SeedlinkClient(EasySeedLinkClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.producer = KafkaProducer(
-            bootstrap_servers='kafka:9092',
+            # bootstrap_servers='kafka:9092',
+            bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'],
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-            key_serializer=lambda v: json.dumps(v).encode('utf-8')
+            key_serializer=lambda v: json.dumps(v).encode('utf-8'),
         )
-        # self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=108)
 
         self.data_station_channel = {}
 
@@ -63,6 +64,8 @@ class SeedlinkClient(EasySeedLinkClient):
             self.data_station_channel[key] = trace
 
     def send_to_kafka(self, trace):
+        if time.time() - trace.stats.endtime.timestamp > 60:
+            return
         data = {
             'network': trace.stats.network,
             'station': trace.stats.station,
@@ -99,7 +102,7 @@ class SeedlinkClient(EasySeedLinkClient):
         # self.executor.submit(self.send_to_kafka, trace)
         # self.executor.submit(self.calculate_gap_time, trace)
         threading.Thread(target=self.send_to_kafka, args=(trace,)).start()
-        threading.Thread(target=self.calculate_gap_time, args=(trace,)).start()
+        # threading.Thread(target=self.calculate_gap_time, args=(trace,)).start()
 
     def on_seedlink_error(self):
         print('Seedlink error')

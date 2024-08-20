@@ -231,13 +231,15 @@ if __name__ == '__main__':
     influxdb_org = "owner"
     influxdb_bucket = "eews"
 
-    bootstrap_servers = 'kafka:9092'
+    # bootstrap_servers = 'kafka:9092'
+    bootstrap_servers = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']
     kafka_topic = 'loc_mag_topic'
     num_partitions = 3
     replication_factor = 1
 
     traceConsumer = TraceConsumer()
-    server = 'kafka:9092'
+    # server = 'kafka:9092'
+    server = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']
     topic = 'p_wave_topic'
 
     while not traceConsumer.topic_exists(topic, server):
@@ -245,6 +247,6 @@ if __name__ == '__main__':
 
     traceConsumer.create_topic(kafka_topic, num_partitions, replication_factor, bootstrap_servers)
 
-    traceConsumer.configureConnection('p_wave_topic', 'trace_group', 'kafka:9092')
+    traceConsumer.configureConnection('p_wave_topic', 'trace_group', server)
     traceConsumer.configureProducer(server)
     traceConsumer.connectConsumer()

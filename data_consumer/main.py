@@ -31,11 +31,12 @@ class TraceConsumer:
       
 if __name__ == '__main__':
   consumer = TraceConsumer()
-  server = 'kafka:9092'
+  # server = 'kafka:9092'
+  server = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']
   topic = 'loc_mag_topic'
 
   while not consumer.topic_exists(topic, server):
     sleep(3)
 
-  consumer.configureConnection('loc_mag_topic', 'data_comsumer_group', 'kafka:9092')
+  consumer.configureConnection('loc_mag_topic', 'data_comsumer_group', server)
   consumer.connectConsumer()

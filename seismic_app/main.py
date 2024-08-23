@@ -95,7 +95,8 @@ class MainWindow(QMainWindow):
         key = f"{data['station']}-{data['channel']}"
         if key not in self.data:
             # if self.count <= 100 and data['sampling_rate'] >= 10 and data['channel'].endswith('Z'):
-            if data['sampling_rate'] >= 10 and data['channel'].endswith('Z'):
+            # if data['sampling_rate'] >= 10 and data['channel'].endswith('Z'):
+            if data['sampling_rate'] >= 10:
                 self.add_data(data)
                 self.count += 1
                 print('Count:', self.count)

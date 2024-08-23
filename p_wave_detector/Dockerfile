@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.8-slim
 # FROM tensorflow/tensorflow:2.10.0-gpu
 
 WORKDIR /app

@@ -105,6 +105,11 @@ class TraceConsumer:
             
             print(f"Result {data['station']}-{data['channel']}\t: {predictions_p_wave}")
 
+            del converter_np_array
+            del sliding_array
+            del preprocessed_array
+            del predictions_p_wave
+
         except Exception as e:
             print(
                 f"Error predict {data['station']} {data['channel']} {len(data['data'])}: {e}")

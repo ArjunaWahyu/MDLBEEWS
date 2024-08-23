@@ -17,6 +17,7 @@ class TraceConsumer:
         self.producer = None
         self.model = tf.keras.models.load_model(
             './model_p_wave.h5', compile=False)
+        
         self.query_api = self.connectInfluxDB()
         self.last_waveform = {}
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=108)
@@ -239,7 +240,7 @@ if __name__ == '__main__':
 
     traceConsumer = TraceConsumer()
     # server = 'kafka:9092'
-    server = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']
+    server = ['kafka3:9094']
     topic = 'p_wave_topic'
 
     while not traceConsumer.topic_exists(topic, server):

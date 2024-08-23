@@ -16,7 +16,7 @@ class SeedlinkClient(EasySeedLinkClient):
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             key_serializer=lambda v: json.dumps(v).encode('utf-8'),
         )
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=108)
+        # self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=108)
 
         self.data_station_channel = {}
 
@@ -101,8 +101,9 @@ class SeedlinkClient(EasySeedLinkClient):
     def on_data(self, trace):
         # self.executor.submit(self.send_to_kafka, trace)
         # self.executor.submit(self.calculate_gap_time, trace)
-        threading.Thread(target=self.send_to_kafka, args=(trace,)).start()
+        # threading.Thread(target=self.send_to_kafka, args=(trace,)).start()
         # threading.Thread(target=self.calculate_gap_time, args=(trace,)).start()
+        self.send_to_kafka(trace)
 
     def on_seedlink_error(self):
         print('Seedlink error')

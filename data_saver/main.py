@@ -276,8 +276,8 @@ def consume_and_save_data():
 
             start_time = time.time()
             threading.Thread(target=save_data_to_influxdb, args=(data,)).start()
-            threading.Thread(target=save_data_to_mongodb, args=(data,)).start()
-            threading.Thread(target=save_data_to_mseed, args=(data,)).start()
+            # threading.Thread(target=save_data_to_mongodb, args=(data,)).start()
+            # threading.Thread(target=save_data_to_mseed, args=(data,)).start()
 
             logging.info(f"Delay: {time.time() - data['data_provider_time']}\tProcessing Time: {time.time() - start_time}")
 

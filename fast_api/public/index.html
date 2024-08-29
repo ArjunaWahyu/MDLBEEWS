@@ -5,20 +5,53 @@
 </head>
 <body>
     <h1>WebSocket Client</h1>
-    <div id="messages"></div>
+    <table id="dataTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <!-- Add more headers for your data fields -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Table rows will be dynamically added here -->
+        </tbody>
+      </table>
     <script>
-        const ws = new WebSocket('ws://localhost:3333/ws');
-        const messagesDiv = document.getElementById('messages');
+        const ws = new WebSocket('ws://10.66.21.146:3334/ws');
+        // const messagesDiv = document.getElementById('messages');
+        const dataTable = document.getElementById('dataTable').querySelector('tbody');
         const messageElement = document.createElement('p');
+        const row = document.createElement('tr');
+        const idCell = document.createElement('td');
+        const nameCell = document.createElement('td');
 
         ws.onopen = () => {
             console.log('Connected to WebSocket server');
         };
 
         ws.onmessage = (event) => {
-            messageElement.textContent = event.data;
-            messagesDiv.innerHTML = '';
-            messagesDiv.appendChild(messageElement);
+            // messageElement.textContent = event.data;
+            // messagesDiv.innerHTML = '';
+            // messagesDiv.appendChild(messageElement);
+            dataTable.innerHTML = '';
+            const data = JSON.parse(event.data)['waves-data'];
+            data['delay_time'] = (new Date().getTime() - data['api_time']) / 1000;
+            Object.keys(data).forEach((key) => {
+                const value = data[key];
+
+                const row = document.createElement('tr');
+                const idCell = document.createElement('td');
+                const nameCell = document.createElement('td');
+
+                idCell.textContent = key.toString();
+                nameCell.textContent = value.toString();
+
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+
+                dataTable.appendChild(row);
+            });
         };
 
         ws.onclose = () => {

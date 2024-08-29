@@ -46,7 +46,8 @@ const initializeWebSocket = (consumer) => {
     eachMessage: async ({ topic, partition, message }) => {
       const data = JSON.parse(message.value);
       const key = JSON.parse(message.key);
-
+      // add current time unix timestamp with milisecond
+      data['api_time'] = new Date().getTime();
       console.log(`Key: ${message.key},\tPartition ${partition},\tStation: ${data["station"]},\tChannel: ${data["channel"]}`);
       const endpoint = `waves-data`;
 

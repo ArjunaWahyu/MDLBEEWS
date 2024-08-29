@@ -5,6 +5,7 @@ from fastapi import FastAPI, WebSocket
 from fastapi.responses import FileResponse
 from kafka import KafkaConsumer
 from fastapi.middleware.cors import CORSMiddleware
+import time
 
 app = FastAPI()
 
@@ -35,13 +36,14 @@ def consume():
         'trace_topic',
         # bootstrap_servers='kafka:9092',
         bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'],
-        group_id='api-server-group',
+        group_id='fast-api-group',
         auto_offset_reset='earliest',
         key_deserializer=lambda k: json.loads(k.decode('utf-8')),
         value_deserializer=lambda v: json.loads(v.decode('utf-8'))
     )
     for message in consumer:
         data = message.value
+        data['api_time'] = int(time.time()*1000)
         print(f"Key: {message.key}, Partition: {message.partition}, Station: {data['station']}, Channel: {data['channel']}")
         endpoint = 'waves-data'
         message_data = {endpoint: data}

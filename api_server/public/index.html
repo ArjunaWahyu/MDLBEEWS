@@ -30,6 +30,8 @@
       // Clear existing rows
       dataTable.innerHTML = '';
       console.log(data);
+      // show delay between api_time and current time  to milliseconds
+      data['delay_time'] = (new Date().getTime() - data['api_time']) / 1000;
 
       Object.keys(data).forEach((key) => {
         const value = data[key];
@@ -41,15 +43,11 @@
         idCell.textContent = key.toString();
         nameCell.textContent = value.toString();
 
-        // Add more cells for additional data fields if needed
-
         row.appendChild(idCell);
         row.appendChild(nameCell);
-        // Append additional cells to the row if needed
 
         dataTable.appendChild(row);
       });
-
     });
   </script>
 </body>

@@ -110,10 +110,44 @@ Based on the test results, the Multiprocessing model delivered the best performa
 | Multiprocessing + Multithreading | 4.768                | 62.50         | 600               | **Stable**                               |
 
 ### Performance Analysis of NGINX as a Load Balancer for Kafka Broker
+Testing shows that using Kafka as both broker and load balancer results in the lowest data delay (0.0063 seconds) but with higher memory consumption (3108 MB). Meanwhile, integrating NGINX as a load balancer reduces memory usage to 2591 MB, but increases data delay to 0.0159 seconds. The choice of configuration depends on whether lower latency or memory efficiency is the priority.
+
+| Scenario                          | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
+|-----------------------------------|----------------------|---------------|-------------------|
+| Kafka as Broker and Load Balancer | **0.006329**         | 27.24         | 3108              |
+| Kafka with NGINX Load Balancer    | 0.015902             | **25.68**     | **2591**          |
 
 ### Performance Analysis of Multi-Container Execution in Data Archiving and Seismic Detection
 
+
+| Num of Container | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
+|------------------|----------------------|---------------|-------------------|
+| 1 Data Archiver  | 0.019274             | 150.37        | 151.34            |
+| 2 Data Archiver  | 0.018164             | 160.55        | 242.68            |
+| 3 Data Archiver  | 0.017323             | 173.48        | 321.34            |
+| 4 Data Archiver  | 0.015903             | 185.81        | 418.59            |
+| 5 Data Archiver  | 0.015763             | 197.90        | 518.59            |
+
+| Scenario                     | Data Delay (seconds) | CPU Usage (%) |
+|------------------------------|----------------------|---------------|
+| 2 P wave Detector            | 0.034936             | 195.73        |
+| 3 P wave Detector            | 0.034010             | 228.17        |
+| 4 P wave Detector            | 0.033197             | 257.94        |
+| 5 P wave Detector            | 0.032647             | 280.00        |
+| 2 P wave Detector with NGINX | 0.035951             | 157.21        |
+| 3 P wave Detector with NGINX | 0.035214             | 162.55        |
+| 4 P wave Detector with NGINX | 0.034843             | 177.18        |
+| 5 P wave Detector with NGINX | 0.033676             | 192.14        |
+
+
 ### Performance Analysis of WebSocket Implementation Using Express.js and FastAPI
+
+| Scenario            | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
+|---------------------|----------------------|---------------|-------------------|
+| Express.js 1 Client | 0.001324             | 12.02         | 95.49             |
+| Express.js 5 Client | 0.001452             | 13.38         | 96.05             |
+| FastAPI 1 Client    | 0.001356             | 17.71         | 72.67             |
+| FastAPI 5 Client    | 0.001578             | 39.05         | 72.97             |
 
 
 ## LICENSE

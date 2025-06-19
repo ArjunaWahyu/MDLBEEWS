@@ -90,6 +90,10 @@ To install MDLBEEWS, follow these steps:
     | `docker-compose-3-7.yml`    | 3 P Wave Detectors                                 |
     | `docker-compose-3-8.yml`    | 4 P Wave Detectors                                 |
     | `docker-compose-3-9.yml`    | 5 P Wave Detectors                                 |
+    | `docker-compose-3-10.yml`   | 2 P Wave Detectors with Load Balancer              |
+    | `docker-compose-3-11.yml`   | 3 P Wave Detectors with Load Balancer              |
+    | `docker-compose-3-12.yml`   | 4 P Wave Detectors with Load Balancer              |
+    | `docker-compose-3-13.yml`   | 5 P Wave Detectors with Load Balancer              |
 
     ### Test Cases of WebSocket Implementation Using Express.js and FastAPI
 

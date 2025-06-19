@@ -130,21 +130,9 @@ services:
       - kafka1
     restart: always
 
-  load_balancer:
+  p_wave_detector:
     build:
-      context: ./load_balancer
-    deploy:
-      replicas: 1
-    tty: true
-    depends_on:
-      - kafka1
-    restart: always
-
-  p_wave_detector_load_balance:
-    build:
-      context: ./p_wave_detector_load_balance
-    ports:
-      - "8004"
+      context: ./p_wave_detector
     deploy:
       replicas: 4
     tty: true
@@ -220,7 +208,7 @@ services:
     build:
       context: ./data_saver
     deploy:
-      replicas: 1
+      replicas: 5
     volumes:
       - ./data_saver/data_archive:/mnt/data
     tty: true

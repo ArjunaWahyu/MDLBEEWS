@@ -146,7 +146,7 @@ services:
     ports:
       - "8004"
     deploy:
-      replicas: 4
+      replicas: 2
     tty: true
     depends_on:
       - kafka1
@@ -220,7 +220,7 @@ services:
     build:
       context: ./data_saver
     deploy:
-      replicas: 1
+      replicas: 5
     volumes:
       - ./data_saver/data_archive:/mnt/data
     tty: true

@@ -220,7 +220,7 @@ services:
     build:
       context: ./data_saver
     deploy:
-      replicas: 1
+      replicas: 2
     volumes:
       - ./data_saver/data_archive:/mnt/data
     tty: true

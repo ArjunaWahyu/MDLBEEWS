@@ -144,16 +144,16 @@ To ensure the reliability and consistency of the results, the evaluation was con
 
     The evaluation reveals that increasing the number of P wave detectors leads to reduced data delay, indicating improved responsiveness. However, this comes at the cost of higher CPU usage. When NGINX is integrated into the system, data delay slightly increases, but CPU usage is significantly reduced, suggesting a trade-off between processing speed and computational efficiency.
 
-    | Scenario                     | Data Delay (seconds) | CPU Usage (%) |
-    |------------------------------|----------------------|---------------|
-    | 2 P wave Detector            | 0.034936             | 195.73        |
-    | 3 P wave Detector            | 0.034010             | 228.17        |
-    | 4 P wave Detector            | 0.033197             | 257.94        |
-    | 5 P wave Detector            | 0.032647             | 280.00        |
-    | 2 P wave Detector with NGINX | 0.035951             | 157.21        |
-    | 3 P wave Detector with NGINX | 0.035214             | 162.55        |
-    | 4 P wave Detector with NGINX | 0.034843             | 177.18        |
-    | 5 P wave Detector with NGINX | 0.033676             | 192.14        |
+    | Scenario                             | Data Delay (seconds) | CPU Usage (%) |
+    |--------------------------------------|----------------------|---------------|
+    | 2 P wave Detector                    | 0.034936             | 195.73        |
+    | 3 P wave Detector                    | 0.034010             | 228.17        |
+    | 4 P wave Detector                    | 0.033197             | 257.94        |
+    | 5 P wave Detector                    | 0.032647             | 280.00        |
+    | 2 P wave Detector with Load Blanacer | 0.035951             | 157.21        |
+    | 3 P wave Detector with Load Blanacer | 0.035214             | 162.55        |
+    | 4 P wave Detector with Load Blanacer | 0.034843             | 177.18        |
+    | 5 P wave Detector with Load Blanacer | 0.033676             | 192.14        |
 
 4. Performance Analysis of WebSocket Implementation Using Express.js and FastAPI
 

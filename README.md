@@ -2,12 +2,16 @@
 
 ## Description
 
-MDLBEEWS is a modular deep learning-based earthquake early warning system designed to provide real-time alerts and information about seismic activities. It leverages advanced machine learning techniques to analyze seismic data and predict potential earthquakes, enabling timely responses to mitigate risks and enhance safety.
+MDLBEEWS is a modular deep learning-based earthquake early warning system designed to provide real-time alerts and information about seismic activities. It leverages advanced machine learning techniques to analyze seismic data and predict potential earthquakes, enabling timely responses to mitigate risks and enhance safety. This software is designed to accelerate real-time seismic data processing to support earthquake early warning systems. Featuring a modular interface and containerization support, the system is easily deployable by geophysics researchers, disaster management agencies, and technology developers.
 
-### Developer
+The software significantly enhances research and operational efficiency within earthquake early warning systems. By automating previously manual workflows, it enables real-time seismic data analysis within minutes. In addition to accelerating processes, the software also opens new opportunities for exploring machine learning-based topics that were previously inaccessible due to computational limitations.
+
+### Contributors
 
 - Adi Wibowo – [bowo.adi@live.undip.ac.id](mailto:bowo.adi@live.undip.ac.id)
-- Arjuna Wahyu Kusuma – [arjuna.kusuma@bmkg.go.id](mailto:arjuna.kusuma@bmkg.go.id)
+- Arjuna Wahyu Kusuma – [arjunawahyukusuma@alumni.undip.ac.id](mailto:arjunawahyukusuma@alumni.undip.ac.id) (corresponding author)
+- Satriawan Rasyid Purnama – [satriawanrasyid@live.undip.ac.id](mailto:satriawanrasyid@live.undip.ac.id)
+- Liem, Roy Marcelino – [liemroym@alumni.undip.ac.id](mailto:liemroym@alumni.undip.ac.id)
 
 ### Table of Contents
 - [Installation](#installation)
@@ -49,7 +53,7 @@ To install MDLBEEWS, follow these steps:
     docker-compose -f docker-compose-1-1.yml up -d
     ```
 
-    The following table lists the available test cases and their corresponding configuration files. Each test case is designed to evaluate different aspects of the system, such as data processing methods, load balancing, multi-container setups, and WebSocket implementations.
+3. The table below outlines the available test cases along with their respective configuration files. Each test case includes detailed information and is intended to assess specific components of the system, such as data processing techniques, load balancing strategies, multi-container configurations, and WebSocket-based communication approaches.
 
     ### Test Cases of Parallel Data Processing on Data Provider
 
@@ -93,62 +97,70 @@ To install MDLBEEWS, follow these steps:
     
     | Configuration File          | Description                                        |
     |-----------------------------|----------------------------------------------------|
-    | `docker-compose-4-1.yml`    | 1 Express.js client and 1 FastAPI client           |
-    | `docker-compose-4-2.yml`    | 5 Express.js clients and 5 FastAPI clients         |
+    | `docker-compose-4-1.yml`    | Express.js                                         |
+    | `docker-compose-4-2.yml`    | FastAPI                                            |
 
 ## Our Test
 
-### Performance Analysis of Parallel Data Processing on Data Provider
+The experimental setup leverages high-performance hardware to ensure optimal computational efficiency and reliability. It features an Intel® Core™ i9-13900K processor, renowned for its exceptional processing capabilities, paired with 128 GB of memory to accommodate large-scale seismic datasets and intensive real-time computations. The system also integrates an NVIDIA GeForce RTX 4090 GPU, which provides advanced graphics rendering and robust support for machine learning algorithms. Furthermore, a 4 TB solid-state drive (SSD) is utilized to facilitate rapid data access and storage of extensive seismic records, enabling seamless execution of automated workflows and real-time analysis.
 
-Based on the test results, the Multiprocessing model delivered the best performance with the lowest latency (2.955 seconds), CPU usage of 44.50%, and memory usage of 476 MB, remaining stable throughout the testing. In contrast, the Sequential and Multithreading models experienced crashes due to limitations in handling parallel execution and resource contention.
+To ensure the reliability and consistency of the results, the evaluation was conducted using a dataset comprising 100 individual samples. The final performance metrics were derived by calculating the average across all samples, thereby minimizing the impact of outliers and random fluctuations. This approach provides a robust representation of the system’s capabilities under typical operating conditions and enhances the statistical validity of the findings.
 
-| Scenario                         | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) | Notes                                    |
-|----------------------------------|----------------------|---------------|-------------------|------------------------------------------|
-| Sequential                       | None                 | None          | None              | 40 minutes delay start, crash occurs     |
-| Multithreading                   | 3.150                | 31.24         | 112               | Crash occurs when there are many threads |
-| Multiprocessing                  | **2.955**            | **44.50**     | 476               | **Stable**                               |
-| Multiprocessing + Multithreading | 4.768                | 62.50         | 600               | **Stable**                               |
+1. Performance Analysis of Parallel Data Processing on Data Provider
 
-### Performance Analysis of NGINX as a Load Balancer for Kafka Broker
-Testing shows that using Kafka as both broker and load balancer results in the lowest data delay (0.0063 seconds) but with higher memory consumption (3108 MB). Meanwhile, integrating NGINX as a load balancer reduces memory usage to 2591 MB, but increases data delay to 0.0159 seconds. The choice of configuration depends on whether lower latency or memory efficiency is the priority.
+    Based on the test results, the Multiprocessing model delivered the best performance with the lowest latency (2.955 seconds), CPU usage of 44.50%, and memory usage of 476 MB, remaining stable throughout the testing. In contrast, the Sequential and Multithreading models experienced crashes due to limitations in handling parallel execution and resource contention.
 
-| Scenario                          | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
-|-----------------------------------|----------------------|---------------|-------------------|
-| Kafka as Broker and Load Balancer | **0.006329**         | 27.24         | 3108              |
-| Kafka with NGINX Load Balancer    | 0.015902             | **25.68**     | **2591**          |
+    | Scenario                         | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) | Notes                                    |
+    |----------------------------------|----------------------|---------------|-------------------|------------------------------------------|
+    | Sequential                       | None                 | None          | None              | 40 minutes delay start, crash occurs     |
+    | Multithreading                   | 3.150                | 31.24         | 112               | Crash occurs when there are many threads |
+    | Multiprocessing                  | **2.955**            | **44.50**     | 476               | **Stable**                               |
+    | Multiprocessing + Multithreading | 4.768                | 62.50         | 600               | **Stable**                               |
 
-### Performance Analysis of Multi-Container Execution in Data Archiving and Seismic Detection
+2. Performance Analysis of NGINX as a Load Balancer for Kafka Broker
 
+    Testing shows that using Kafka as both broker and load balancer results in the lowest data delay (0.0063 seconds) but with higher memory consumption (3108 MB). Meanwhile, integrating NGINX as a load balancer reduces memory usage to 2591 MB, but increases data delay to 0.0159 seconds. The choice of configuration depends on whether lower latency or memory efficiency is the priority.
 
-| Num of Container | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
-|------------------|----------------------|---------------|-------------------|
-| 1 Data Archiver  | 0.019274             | 150.37        | 151.34            |
-| 2 Data Archiver  | 0.018164             | 160.55        | 242.68            |
-| 3 Data Archiver  | 0.017323             | 173.48        | 321.34            |
-| 4 Data Archiver  | 0.015903             | 185.81        | 418.59            |
-| 5 Data Archiver  | 0.015763             | 197.90        | 518.59            |
+    | Scenario                          | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
+    |-----------------------------------|----------------------|---------------|-------------------|
+    | Kafka as Broker and Load Balancer | **0.006329**         | 27.24         | 3108              |
+    | Kafka with NGINX Load Balancer    | 0.015902             | **25.68**     | **2591**          |
 
-| Scenario                     | Data Delay (seconds) | CPU Usage (%) |
-|------------------------------|----------------------|---------------|
-| 2 P wave Detector            | 0.034936             | 195.73        |
-| 3 P wave Detector            | 0.034010             | 228.17        |
-| 4 P wave Detector            | 0.033197             | 257.94        |
-| 5 P wave Detector            | 0.032647             | 280.00        |
-| 2 P wave Detector with NGINX | 0.035951             | 157.21        |
-| 3 P wave Detector with NGINX | 0.035214             | 162.55        |
-| 4 P wave Detector with NGINX | 0.034843             | 177.18        |
-| 5 P wave Detector with NGINX | 0.033676             | 192.14        |
+3. Performance Analysis of Multi-Container Execution in Data Archiving and Seismic Detection
 
+    Performance evaluation of the Data Archiver system shows that increasing the number of containers from one to five results in a consistent reduction in data delay, from 0.019274 to 0.015763 seconds. However, this improvement in latency comes with a substantial rise in resource consumption, as CPU usage increases from 150.37% to 197.90% and memory usage from 151.34 MB to 518.59 MB. These findings highlight a trade-off between processing speed and system resource demands.
 
-### Performance Analysis of WebSocket Implementation Using Express.js and FastAPI
+    | Num of Container | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
+    |------------------|----------------------|---------------|-------------------|
+    | 1 Data Archiver  | 0.019274             | 150.37        | 151.34            |
+    | 2 Data Archiver  | 0.018164             | 160.55        | 242.68            |
+    | 3 Data Archiver  | 0.017323             | 173.48        | 321.34            |
+    | 4 Data Archiver  | 0.015903             | 185.81        | 418.59            |
+    | 5 Data Archiver  | 0.015763             | 197.90        | 518.59            |
 
-| Scenario            | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
-|---------------------|----------------------|---------------|-------------------|
-| Express.js 1 Client | 0.001324             | 12.02         | 95.49             |
-| Express.js 5 Client | 0.001452             | 13.38         | 96.05             |
-| FastAPI 1 Client    | 0.001356             | 17.71         | 72.67             |
-| FastAPI 5 Client    | 0.001578             | 39.05         | 72.97             |
+    The evaluation reveals that increasing the number of P wave detectors leads to reduced data delay, indicating improved responsiveness. However, this comes at the cost of higher CPU usage. When NGINX is integrated into the system, data delay slightly increases, but CPU usage is significantly reduced, suggesting a trade-off between processing speed and computational efficiency.
 
+    | Scenario                     | Data Delay (seconds) | CPU Usage (%) |
+    |------------------------------|----------------------|---------------|
+    | 2 P wave Detector            | 0.034936             | 195.73        |
+    | 3 P wave Detector            | 0.034010             | 228.17        |
+    | 4 P wave Detector            | 0.033197             | 257.94        |
+    | 5 P wave Detector            | 0.032647             | 280.00        |
+    | 2 P wave Detector with NGINX | 0.035951             | 157.21        |
+    | 3 P wave Detector with NGINX | 0.035214             | 162.55        |
+    | 4 P wave Detector with NGINX | 0.034843             | 177.18        |
+    | 5 P wave Detector with NGINX | 0.033676             | 192.14        |
+
+4. Performance Analysis of WebSocket Implementation Using Express.js and FastAPI
+
+    The performance comparison between Express.js and FastAPI under varying client loads reveals distinct resource utilization patterns. While Express.js demonstrates lower CPU usage with a single client, it consumes more memory than FastAPI. As the number of clients increases to five, FastAPI exhibits a sharper rise in CPU usage but maintains relatively stable memory consumption, indicating a trade-off between processing efficiency and memory management.
+
+    | Scenario            | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
+    |---------------------|----------------------|---------------|-------------------|
+    | Express.js 1 Client | 0.001324             | 12.02         | 95.49             |
+    | Express.js 5 Client | 0.001452             | 13.38         | 96.05             |
+    | FastAPI 1 Client    | 0.001356             | 17.71         | 72.67             |
+    | FastAPI 5 Client    | 0.001578             | 39.05         | 72.97             |
 
 ## LICENSE
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

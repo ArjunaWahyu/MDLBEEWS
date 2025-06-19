@@ -124,7 +124,7 @@ services:
   data_provider:
     container_name: data_provider
     build:
-      context: ./data_provider-sequence
+      context: ./data_provider-multiprocess
     tty: true
     depends_on:
       - kafka1
@@ -229,17 +229,6 @@ services:
       - influxdb
       - mongo
       - mongo-express
-    restart: always
-
-  api_server:
-    container_name: api_server
-    build:
-      context: ./api_server
-    ports:
-      - "3333:3333"
-    tty: true
-    depends_on:
-      - kafka1
     restart: always
 
   fast_api:

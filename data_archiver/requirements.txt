@@ -1,6 +1,7 @@
-kafka-python
-influxdb
-influxdb_client
-pymongo
-numpy
-obspy
+# add version
+kafka-python==2.0.2
+influxdb==5.0.0
+influxdb_client==1.0.0
+pymongo==3.11.4
+numpy==1.21.0
+obspy==1.2.2

@@ -1,4 +1,4 @@
-kafka-python
-fastapi 
-uvicorn
-websockets
+kafka-python ==2.0.2
+fastapi ==0.68.0
+uvicorn ==0.15.0
+websockets ==10.3

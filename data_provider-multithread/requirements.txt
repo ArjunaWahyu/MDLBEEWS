@@ -1,2 +1,2 @@
-kafka-python
-obspy
+kafka-python==2.0.2
+obspy==1.2.2

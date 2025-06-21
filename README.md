@@ -6,6 +6,17 @@ MDLBEEWS is a modular deep learning-based earthquake early warning system design
 
 The software significantly enhances research and operational efficiency within earthquake early warning systems. By automating previously manual workflows, it enables real-time seismic data analysis within minutes. In addition to accelerating processes, the software also opens new opportunities for exploring machine learning-based topics that were previously inaccessible due to computational limitations.
 
+### Technology Overview
+
+MDLBEEWS utilizes several modern technologies to ensure scalability, reliability, and high performance:
+
+- **Docker**: The system is fully containerized using Docker, allowing for easy deployment, isolation, and scalability of each component. This ensures consistent environments across different platforms and simplifies dependency management.
+- **Apache Kafka**: Kafka is used as the core message broker for streaming seismic data between system modules. It enables high-throughput, fault-tolerant, and real-time data pipelines, ensuring reliable communication and data integrity.
+- **NGINX**: NGINX acts as a load balancer within the architecture, distributing incoming traffic efficiently across multiple Kafka brokers or service containers. This improves system resilience and optimizes resource utilization under varying loads.
+- **WebSocket**: Real-time communication between clients and the system is facilitated using WebSocket protocols, implemented via Express.js and FastAPI. This enables low-latency, bidirectional data transfer, which is essential for delivering timely earthquake alerts and updates.
+
+By integrating these technologies, MDLBEEWS achieves a robust, modular, and extensible architecture suitable for both research and operational deployments in earthquake early warning scenarios.
+
 ### Contributors
 
 - Adi Wibowo – [bowo.adi@live.undip.ac.id](mailto:bowo.adi@live.undip.ac.id)
@@ -123,12 +134,12 @@ To ensure the reliability and consistency of the results, the evaluation was con
 
 2. Performance Analysis of NGINX as a Load Balancer for Kafka Broker
 
-    Testing shows that using Kafka as both broker and load balancer results in the lowest data delay (0.0063 seconds) but with higher memory consumption (3108 MB). Meanwhile, integrating NGINX as a load balancer reduces memory usage to 2591 MB, but increases data delay to 0.0159 seconds. The choice of configuration depends on whether lower latency or memory efficiency is the priority.
+    Testing shows that using Kafka as both broker and load balancer results in the lowest data delay (0.0063 seconds) but with higher memory consumption (3,108 MB). Meanwhile, integrating NGINX as a load balancer reduces memory usage to 2,591 MB, but increases data delay to 0.0159 seconds. The choice of configuration depends on whether lower latency or memory efficiency is the priority.
 
     | Scenario                          | Data Delay (seconds) | CPU Usage (%) | Memory Usage (MB) |
     |-----------------------------------|----------------------|---------------|-------------------|
-    | Kafka as Broker and Load Balancer | **0.006329**         | 27.24         | 3108              |
-    | Kafka with NGINX Load Balancer    | 0.015902             | **25.68**     | **2591**          |
+    | Kafka as Broker and Load Balancer | **0.006329**         | 27.24         | 3,108             |
+    | Kafka with NGINX Load Balancer    | 0.015902             | **25.68**     | **2,591**         |
 
 3. Performance Analysis of Multi-Container Execution in Data Archiving and Seismic Detection
 

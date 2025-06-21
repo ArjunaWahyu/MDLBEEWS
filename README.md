@@ -6,20 +6,7 @@ MDLBEEWS is a modular deep learning-based earthquake early warning system design
 
 The software significantly enhances research and operational efficiency within earthquake early warning systems. By automating previously manual workflows, it enables real-time seismic data analysis within minutes. In addition to accelerating processes, the software also opens new opportunities for exploring machine learning-based topics that were previously inaccessible due to computational limitations.
 
-At present, MDLBEEWS operates as a single-station system, meaning it processes seismic data from one sensor location at a time. While this approach enables focused and efficient real-time analysis, it does not yet support multi-station or networked deployments, which are essential for broader regional coverage and more robust earthquake early warning capabilities.
-
-Despite this limitation, MDLBEEWS is designed with integration in mind. The system provides both RESTful API and WebSocket interfaces, allowing seamless communication with external platforms and services. These interfaces enable other systems to access real-time alerts, seismic data, and analytical results, paving the way for future expansion into multi-station configurations and integration with larger seismic monitoring networks.
-
-### Technology Overview
-
-MDLBEEWS utilizes several modern technologies to ensure scalability, reliability, and high performance:
-
-- **Docker**: The system is fully containerized using Docker, allowing for easy deployment, isolation, and scalability of each component. This ensures consistent environments across different platforms and simplifies dependency management.
-- **Apache Kafka**: Kafka is used as the core message broker for streaming seismic data between system modules. It enables high-throughput, fault-tolerant, and real-time data pipelines, ensuring reliable communication and data integrity.
-- **NGINX**: NGINX acts as a load balancer within the architecture, distributing incoming traffic efficiently across multiple Kafka brokers or service containers. This improves system resilience and optimizes resource utilization under varying loads.
-- **WebSocket**: Real-time communication between clients and the system is facilitated using WebSocket protocols, implemented via Express.js and FastAPI. This enables low-latency, bidirectional data transfer, which is essential for delivering timely earthquake alerts and updates.
-
-By integrating these technologies, MDLBEEWS achieves a robust, modular, and extensible architecture suitable for both research and operational deployments in earthquake early warning scenarios.
+MDLBEEWS is built on a foundation of modern technologies to deliver scalable, reliable, and high-performance earthquake early warning capabilities. The system leverages Docker for containerization, ensuring consistent deployment and simplified dependency management across platforms. Apache Kafka serves as the core message broker, enabling real-time, fault-tolerant streaming of seismic data between modules. NGINX is integrated as a load balancer to efficiently distribute traffic and optimize resource utilization. For real-time, bidirectional communication, the system employs WebSocket protocols implemented with Express.js and FastAPI, supporting low-latency delivery of alerts and updates. Currently, MDLBEEWS operates as a single-station system, processing seismic data from one sensor location at a time and does not yet support multi-station or networked deployments. 
 
 ### Contributors
 
@@ -51,6 +38,11 @@ To install MDLBEEWS, follow these steps:
    git clone https://github.com/ArjunaWahyu/paper-eews.git
    cd paper-eews
    ```
+
+## Requirement 
+
+<!-- add all requirement version from file requirement.txt in every folder -->
+
 
 ## How To Run
 1. You can run the system using Docker Compose with the following command:
@@ -122,6 +114,8 @@ To install MDLBEEWS, follow these steps:
 ## Our Test
 
 The experimental setup leverages high-performance hardware to ensure optimal computational efficiency and reliability. It features an Intel® Core™ i9-13900K processor, renowned for its exceptional processing capabilities, paired with 128 GB of memory to accommodate large-scale seismic datasets and intensive real-time computations. The system also integrates an NVIDIA GeForce RTX 4090 GPU, which provides advanced graphics rendering and robust support for machine learning algorithms. Furthermore, a 4 TB solid-state drive (SSD) is utilized to facilitate rapid data access and storage of extensive seismic records, enabling seamless execution of automated workflows and real-time analysis.
+
+The MDLBEEWS system is developed using a set of well-established libraries and tools to ensure reliability, scalability, and high performance. It requires Python (version 3.7 or higher) as the core programming language. Containerization and orchestration are managed using Docker (version 28.2.2) and Docker Compose (version 2.37.1). For real-time data streaming and message brokering, the system uses `kafka-python>=2.0.2`. Deep learning functionalities are powered by `tensorflow>=2.10.0`, while `fastapi>=0.68.0` is used for building high-performance APIs. Seismic data processing is handled by `obspy>=1.2.2`, and real-time, bidirectional communication is supported by `websockets>=10.3`. The system also utilizes `numpy>=1.21.0` for efficient numerical computations.
 
 To ensure the reliability and consistency of the results, the evaluation was conducted using a dataset comprising 100 individual samples. The final performance metrics were derived by calculating the average across all samples, thereby minimizing the impact of outliers and random fluctuations. This approach provides a robust representation of the system’s capabilities under typical operating conditions and enhances the statistical validity of the findings.
 

@@ -6,6 +6,10 @@ MDLBEEWS is a modular deep learning-based earthquake early warning system design
 
 The software significantly enhances research and operational efficiency within earthquake early warning systems. By automating previously manual workflows, it enables real-time seismic data analysis within minutes. In addition to accelerating processes, the software also opens new opportunities for exploring machine learning-based topics that were previously inaccessible due to computational limitations.
 
+At present, MDLBEEWS operates as a single-station system, meaning it processes seismic data from one sensor location at a time. While this approach enables focused and efficient real-time analysis, it does not yet support multi-station or networked deployments, which are essential for broader regional coverage and more robust earthquake early warning capabilities.
+
+Despite this limitation, MDLBEEWS is designed with integration in mind. The system provides both RESTful API and WebSocket interfaces, allowing seamless communication with external platforms and services. These interfaces enable other systems to access real-time alerts, seismic data, and analytical results, paving the way for future expansion into multi-station configurations and integration with larger seismic monitoring networks.
+
 ### Technology Overview
 
 MDLBEEWS utilizes several modern technologies to ensure scalability, reliability, and high performance:

@@ -165,7 +165,7 @@ services:
           sleep 600
           docker restart paper-eews-p_wave_detector_load_balance-1
           docker restart paper-eews-p_wave_detector-1
-          docker restart paper-eews-data_saver-1
+          docker restart paper-eews-data_archiver-1
           
           # for topic in $(docker exec kafka1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka1:9092 --list); do
           #   for partition in $(docker exec kafka1 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka1:9092 --describe --topic $topic | grep 'Partition:' | awk '{print $2}'); do
@@ -176,12 +176,12 @@ services:
           sleep 30
           docker restart paper-eews-p_wave_detector_load_balance-2
           docker restart paper-eews-p_wave_detector-2
-          docker restart paper-eews-data_saver-2
+          docker restart paper-eews-data_archiver-2
 
           sleep 30
           docker restart paper-eews-p_wave_detector_load_balance-3
           docker restart paper-eews-p_wave_detector-3
-          docker restart paper-eews-data_saver-3
+          docker restart paper-eews-data_archiver-3
 
           # for topic in $(docker exec kafka2 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka2:9093 --list); do
           #   for partition in $(docker exec kafka2 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka2:9093 --describe --topic $topic | grep 'Partition:' | awk '{print $2}'); do
@@ -192,12 +192,12 @@ services:
           sleep 30
           docker restart paper-eews-p_wave_detector_load_balance-4
           docker restart paper-eews-p_wave_detector-4
-          docker restart paper-eews-data_saver-4
+          docker restart paper-eews-data_archiver-4
           
           sleep 30
           docker restart paper-eews-p_wave_detector_load_balance-5
           docker restart paper-eews-p_wave_detector-5
-          docker restart paper-eews-data_saver-5
+          docker restart paper-eews-data_archiver-5
 
           # for topic in $(docker exec kafka3 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka3:9094 --list); do
           #   for partition in $(docker exec kafka3 /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka3:9094 --describe --topic $topic | grep 'Partition:' | awk '{print $2}'); do
@@ -216,13 +216,13 @@ services:
       - kafka1
     restart: always
 
-  data_saver:
+  data_archiver:
     build:
-      context: ./data_saver
+      context: ./data_archiver
     deploy:
       replicas: 3
     volumes:
-      - ./data_saver/data_archive:/mnt/data
+      - ./data_archiver/data_archive:/mnt/data
     tty: true
     depends_on:
       - kafka1

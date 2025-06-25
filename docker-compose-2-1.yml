@@ -110,17 +110,6 @@ services:
     depends_on:
       - influxdb
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx_load_balancer
-    ports:
-      - "8004:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - p_wave_detector_load_balance
-    restart: always
-
   data_provider:
     container_name: data_provider
     build:

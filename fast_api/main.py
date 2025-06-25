@@ -50,6 +50,25 @@ def consume():
         # Broadcasting message to all connected WebSocket clients
         asyncio.run(broadcast_message(message_data))
 
+def consume2():
+    consumer = KafkaConsumer(
+        'result_loc_mag_topic',
+        # bootstrap_servers='kafka:9092',
+        bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'],
+        group_id='fast-api-group2',
+        auto_offset_reset='earliest',
+        key_deserializer=lambda k: json.loads(k.decode('utf-8')),
+        value_deserializer=lambda v: json.loads(v.decode('utf-8'))
+    )
+    for message in consumer:
+        data = message.value
+        data['api_time'] = int(time.time()*1000)
+        print(f"Key: {message.key}, Partition: {message.partition}, Station: {data['station']}, Channel: {data['channel']}, predictions_loc_mag: {data['predictions_loc_mag']}")
+        endpoint = 'loc-mag-data'
+        message_data = {endpoint: data}
+        # Broadcasting message to all connected WebSocket clients
+        asyncio.run(broadcast_message(message_data))
+
 async def broadcast_message(message):
     clients_to_remove = []
     for client in connected_clients:
@@ -70,6 +89,8 @@ async def get():
 
 if __name__ == "__main__":
     consumer_thread = Thread(target=consume)
+    consumer_thread2 = Thread(target=consume2)
     consumer_thread.start()
+    consumer_thread2.start()
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=3333)

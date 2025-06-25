@@ -99,16 +99,26 @@ class TraceConsumer:
             preprocessed_array = np.apply_along_axis(
                 self.preprocessingPWave, axis=1, arr=sliding_array)
 
-            # melakukan prediksi p wave dengan model Machine Learning
-            predictions_p_wave = self.model.predict(
+            # melakukan estimasi location magnitude dengan model Machine Learning
+            predictions_loc_mag = self.model.predict(
                 preprocessed_array, verbose=0)
             
-            print(f"Result {data['station']}-{data['channel']}\t: {predictions_p_wave}")
+            self.producer.send(
+                'result_loc_mag_topic',
+                value={
+                    'station': data['station'],
+                    'channel': data['channel'],
+                    'predictions_loc_mag': predictions_loc_mag.tolist(),
+                }
+            )
+            self.producer.flush()
+
+            print(f"Result {data['station']}-{data['channel']}\t: {predictions_loc_mag}")
 
             del converter_np_array
             del sliding_array
             del preprocessed_array
-            del predictions_p_wave
+            del predictions_loc_mag
 
         except Exception as e:
             print(
@@ -167,5 +177,6 @@ if __name__ == '__main__':
     # traceConsumer.create_topic(kafka_topic, num_partitions, replication_factor, bootstrap_servers)
 
     traceConsumer.configureConnection('loc_mag_topic', 'loc_mag_group', server)
+    traceConsumer.configureProducer(server)
     # traceConsumer.configureProducer(server)
     traceConsumer.connectConsumer()

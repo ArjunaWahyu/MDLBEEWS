@@ -1,6 +1,6 @@
-kafka-python==2.0.2
-obspy==1.2.2
-numpy==1.21.0
+kafka-python==2.2.13
+obspy==1.4.2
+numpy==1.24.4
 tensorflow==2.10.0
 fastapi==0.68.0
 uvicorn==0.15.0

@@ -35,7 +35,7 @@ To install MDLBEEWS, follow these steps:
 
 3. Clone the repository:
    ```bash
-   git clone https://github.com/ArjunaWahyu/paper-eews.git
+   git clone https://github.com/ArjunaWahyu/MDLBEEWS.git
    cd paper-eews
    ```
 

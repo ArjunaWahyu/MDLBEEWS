@@ -101,7 +101,7 @@ def save_data_to_influxdb(data):
             bucket=influxdb_bucket, org=influxdb_org, record=points)
         end_run_time = time.time()
 
-        logging.info(f"InfluxDB Time: {end_run_time - start_run_time} seconds")
+        # logging.info(f"InfluxDB Time: {end_run_time - start_run_time} seconds")
     except Exception as e:
         logging.error(f"Error saving data to InfluxDB: {e}")
 

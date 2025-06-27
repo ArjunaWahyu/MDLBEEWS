@@ -209,9 +209,6 @@ class TraceConsumer:
             data = msg.value
             data_delay = time() - data['data_provider_time']
             
-            # print topic and partition
-            print(f"Topic: {msg.topic}, Partition: {msg.partition}, Offset: {msg.offset}, Key: {msg.key}")
-
             # concate last 4 seconds waveform with current waveform
             # self.process(data)
             # self.executor.submit(self.process, data, data_delay)

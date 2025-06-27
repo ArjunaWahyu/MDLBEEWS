@@ -208,6 +208,9 @@ class TraceConsumer:
         for msg in self.consumer:
             data = msg.value
             data_delay = time() - data['data_provider_time']
+            
+            # print topic and partition
+            print(f"Topic: {msg.topic}, Partition: {msg.partition}, Offset: {msg.offset}, Key: {msg.key}")
 
             # concate last 4 seconds waveform with current waveform
             # self.process(data)
@@ -233,7 +236,7 @@ if __name__ == '__main__':
     influxdb_bucket = "eews"
 
     # bootstrap_servers = 'kafka:9092'
-    bootstrap_servers = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']
+    bootstrap_servers = ['kafka1:9092', 'kafka2:9093']
     kafka_topic = 'loc_mag_topic'
     num_partitions = 3
     replication_factor = 1
@@ -249,5 +252,5 @@ if __name__ == '__main__':
     traceConsumer.create_topic(kafka_topic, num_partitions, replication_factor, bootstrap_servers)
 
     traceConsumer.configureConnection('p_wave_topic', 'trace_group', server)
-    traceConsumer.configureProducer(server)
+    traceConsumer.configureProducer(bootstrap_servers)
     traceConsumer.connectConsumer()

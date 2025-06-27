@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # kafka_topic = 'p_wave_topic'
     kafka_topic2 = 'p_wave_topic'
     num_partitions = 5
-    num_partitions2 = 1
+    num_partitions2 = 5
     replication_factor = 2
     replication_factor2 = 1
 

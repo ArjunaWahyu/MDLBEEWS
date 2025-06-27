@@ -12,11 +12,16 @@ class SeedlinkClient(EasySeedLinkClient):
         super().__init__(*args, **kwargs)
         self.producer = KafkaProducer(
             # bootstrap_servers='kafka:9092',
-            bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'],
+            bootstrap_servers=['kafka1:9092', 'kafka2:9093'],
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             key_serializer=lambda v: json.dumps(v).encode('utf-8'),
         )
-        # self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=108)
+        self.producer2 = KafkaProducer(
+            # bootstrap_servers='kafka:9092',
+            bootstrap_servers=['kafka3:9094'],
+            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            key_serializer=lambda v: json.dumps(v).encode('utf-8'),
+        )
 
         self.data_station_channel = {}
 
@@ -88,8 +93,8 @@ class SeedlinkClient(EasySeedLinkClient):
         self.producer.flush()
 
         if trace.stats.channel.endswith('Z'):
-            self.producer.send('p_wave_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
-            self.producer.flush()
+            self.producer2.send('p_wave_topic', data, key=f"{data['station']}-{data['channel']}").add_callback(self.on_send_success).add_errback(self.on_send_error)
+            self.producer2.flush()
 
         # self.producer.flush()
 

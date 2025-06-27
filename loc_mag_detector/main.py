@@ -162,13 +162,13 @@ if __name__ == '__main__':
     influxdb_bucket = "eews"
 
     # bootstrap_servers = 'kafka:9092'
-    bootstrap_servers = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']   
+    bootstrap_servers = ['kafka1:9092', 'kafka2:9093']   
     kafka_topic = 'loc_mag_topic'
     num_partitions = 3
     replication_factor = 1
 
     traceConsumer = TraceConsumer()
-    server = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']  
+    server = ['kafka1:9092', 'kafka2:9093']  
     topic = 'loc_mag_topic'
 
     while not traceConsumer.topic_exists(topic, server):

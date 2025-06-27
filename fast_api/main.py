@@ -35,7 +35,7 @@ def consume():
     consumer = KafkaConsumer(
         'trace_topic',
         # bootstrap_servers='kafka:9092',
-        bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'],
+        bootstrap_servers=['kafka1:9092', 'kafka2:9093'],
         group_id='fast-api-group',
         auto_offset_reset='earliest',
         key_deserializer=lambda k: json.loads(k.decode('utf-8')),
@@ -54,7 +54,7 @@ def consume2():
     consumer = KafkaConsumer(
         'result_loc_mag_topic',
         # bootstrap_servers='kafka:9092',
-        bootstrap_servers=['kafka1:9092', 'kafka2:9093', 'kafka3:9094'],
+        bootstrap_servers=['kafka1:9092', 'kafka2:9093'],
         group_id='fast-api-group2',
         auto_offset_reset='earliest',
         key_deserializer=lambda k: json.loads(k.decode('utf-8')),

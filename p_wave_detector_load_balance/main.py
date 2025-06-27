@@ -17,7 +17,7 @@ last_waveform = LRUCache(maxsize=6000)
 # last_waveform = {}
 model = tf.keras.models.load_model('./model_p_wave.h5', compile=False)
 # bootstrap_servers = 'kafka:9092'
-bootstrap_servers = ['kafka1:9092', 'kafka2:9093', 'kafka3:9094']
+bootstrap_servers = ['kafka1:9092', 'kafka2:9093']
 kafka_topic = 'loc_mag_topic'
 num_partitions = 1
 replication_factor = 1
